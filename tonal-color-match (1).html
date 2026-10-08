@@ -1,0 +1,782 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#f9f9fc">
+  <title>tonal. — 자동 사진 색감 통일</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #242631; --muted: #858995; --line: #e8e9f0;
+      --accent: #7568c5; --accent-deep: #5b4da9; --surface: #fff;
+      --subtle: #f8f8fc; --lavender: #f1effb;
+      --shadow: 0 14px 46px rgba(59,53,91,.055);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0; color: var(--ink); background:
+        radial-gradient(ellipse 70% 34% at 86% -7%, #f1eefe 0%, rgba(241,238,254,0) 100%),
+        #f9f9fc;
+      font: 14px/1.65 -apple-system, BlinkMacSystemFont, "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    button:disabled { opacity: .47; cursor: not-allowed; }
+    button:focus-visible, input:focus-visible, [tabindex]:focus-visible {
+      outline: 3px solid rgba(117,104,197,.28); outline-offset: 3px;
+    }
+    .container { max-width: 1120px; margin: 0 auto; padding: 0 28px; }
+    .topbar { display:flex; align-items:center; justify-content:space-between; padding-top:31px; }
+    .brand { display:flex; align-items:center; gap:10px; user-select:none; }
+    .brandmark { width:25px; height:25px; display:grid; grid-template-columns:repeat(2,1fr); gap:3px; transform:rotate(-12deg); }
+    .brandmark i { display:block; border-radius:50%; background:#9f92df; }
+    .brandmark i:nth-child(2) { background:#e8aeb9; } .brandmark i:nth-child(3) { background:#c9c4e5; } .brandmark i:nth-child(4) { background:#a5cbbd; }
+    .wordmark { font-size:24px; font-weight:730; letter-spacing:-1.5px; line-height:1; }
+    .privacy { display:flex; align-items:center; gap:7px; color:#777987; font-size:12px; }
+    .privacy svg { width:15px; height:15px; stroke:var(--accent); }
+    .hero { text-align:center; padding:72px 0 38px; }
+    .eyebrow { display:inline-flex; align-items:center; gap:8px; color:#8175bd; font-size:11px; letter-spacing:2.2px; font-weight:760; }
+    .eyebrow:before { content:""; width:17px; height:1px; background:#aaa0d5; }
+    h1 { margin:15px 0 12px; font-size:clamp(31px,4.5vw,50px); letter-spacing:-2.5px; font-weight:720; line-height:1.34; }
+    h1 em { color:#7b70ba; font-style:normal; }
+    .lead { margin:0 auto; max-width:630px; color:#797d8b; font-size:14px; line-height:1.95; }
+    .workspace { background:var(--surface); border:1px solid var(--line); box-shadow:var(--shadow); border-radius:24px; overflow:hidden; margin-bottom:30px; }
+    .workspace-head { display:flex; justify-content:space-between; align-items:center; padding:24px 27px 15px; gap:15px; }
+    .section-title { font-size:15px; font-weight:700; letter-spacing:-.4px; }
+    .section-detail { margin-top:3px; font-size:12px; color:var(--muted); }
+    .counter { display:inline-flex; align-items:center; gap:7px; padding:6px 11px; background:#f5f4fb; color:#7770a1; border-radius:99px; font-size:12px; font-weight:650; white-space:nowrap; }
+    .counter strong { font-weight:800; color:#675aac; }
+    .upload-zone { margin:0 27px 23px; padding:33px 20px; text-align:center; border:1.5px dashed #d9d7e8; border-radius:17px; background:linear-gradient(148deg,#fcfbff,#f9f9fc); transition:.2s; }
+    .upload-zone.dragging { background:#f2efff; border-color:var(--accent); transform:scale(.997); }
+    .upload-icon { display:inline-flex; align-items:center; justify-content:center; width:52px; height:52px; border-radius:16px; background:#f0eefb; color:#8c81cc; margin-bottom:12px; }
+    .upload-icon svg { width:25px; height:25px; }
+    .upload-zone h2 { font-size:15px; font-weight:690; margin:0 0 4px; letter-spacing:-.25px; }
+    .upload-zone p { color:#999ba8; font-size:12px; margin:0 0 15px; }
+    .secondary-btn { border:1px solid #dedbe8; background:#fff; color:#625b8e; border-radius:10px; padding:9px 15px; font-size:12px; font-weight:670; transition:.17s; }
+    .secondary-btn:hover:enabled { background:#f6f4fc; border-color:#bfb8e1; }
+    .uploader-hint { display:block; font-size:11px; color:#a2a3ad; margin-top:12px; }
+    .settings { padding:22px 27px; border-top:1px solid #f0f0f5; background:#fdfdff; }
+    .setting-grid { display:grid; grid-template-columns:minmax(230px,1.3fr) minmax(180px,1fr); gap:30px; }
+    .setting-label { display:flex; align-items:center; justify-content:space-between; font-size:12px; font-weight:700; color:#555965; margin-bottom:11px; }
+    .segmented { display:flex; align-items:center; background:#efeff6; padding:4px; border-radius:11px; max-width:360px; gap:3px; }
+    .segment { border:0; background:transparent; flex:1; padding:9px 8px; border-radius:8px; color:#92909d; font-weight:670; font-size:12px; white-space:nowrap; }
+    .segment.active { background:#fff; color:#675bb1; box-shadow:0 2px 9px #3f35630c; }
+    .range-line { display:flex; align-items:center; gap:13px; min-height:36px; }
+    input[type="range"] { accent-color:var(--accent); cursor:pointer; }
+    .strength { width:100%; min-width:0; }
+    .range-value { flex:none; color:#6d63ab; font-weight:750; font-size:12px; min-width:35px; text-align:right; }
+    .setting-foot { color:#a0a1ae; font-size:11px; margin-top:8px; line-height:1.7; }
+    .workspace-actions { border-top:1px solid #f0f0f5; padding:20px 27px; display:flex; justify-content:space-between; align-items:center; gap:15px; }
+    .notice { color:#9497a4; font-size:12px; max-width:570px; }
+    .action-set { display:flex; gap:9px; flex:none; }
+    .primary-btn { border:1px solid #7061b9; background:linear-gradient(135deg,#8c7dd2,#7362bc); color:white; padding:11px 20px; border-radius:10px; font-size:12px; font-weight:720; box-shadow:0 5px 13px #7566bf25; transition:.2s; }
+    .primary-btn:hover:enabled { background:linear-gradient(135deg,#7d6bc8,#6553b0); transform:translateY(-1px); }
+    .clear-btn { background:#fff; border:1px solid var(--line); padding:10px 13px; border-radius:10px; color:#9294a0; font-size:12px; }
+    .clear-btn:hover:enabled { color:#4c4e58; background:#fafafe; }
+    .progress-box { display:none; padding:0 27px 23px; }
+    .progress-box.visible { display:block; }
+    .progress-meta { display:flex; justify-content:space-between; color:#797486; font-size:12px; margin-bottom:8px; }
+    .progress-track { background:#f0eef8; border-radius:100px; height:6px; overflow:hidden; }
+    .progress-fill { height:100%; width:0%; background:linear-gradient(90deg,#aaa0e0,#7c6bc6); border-radius:100px; transition:width .15s; }
+    .status { display:none; padding:13px 16px; border:1px solid #ded9ef; background:#f7f5ff; color:#6a5ca1; border-radius:11px; font-size:12px; margin:0 27px 22px; }
+    .status.visible { display:block; }
+    .status.error { background:#fff6f4; border-color:#f5dcd6; color:#9c5b50; }
+    .results { margin:26px 0 86px; }
+    .results-head { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:17px; }
+    .results-head h2 { margin:0; font-size:18px; font-weight:720; letter-spacing:-.6px; }
+    .results-head p { margin:1px 0 0; color:#9697a3; font-size:12px; }
+    .preview-switch { display:none; padding:4px; border:1px solid #eceaf3; border-radius:11px; background:white; }
+    .preview-switch.visible { display:flex; }
+    .preview-switch button { background:transparent; border:none; padding:6px 11px; color:#9898a5; border-radius:7px; font-size:11px; font-weight:650; }
+    .preview-switch button.active { background:#f1effa; color:#7567bc; }
+    .grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:15px; }
+    .empty { grid-column:1/-1; display:flex; align-items:center; justify-content:center; flex-direction:column; text-align:center; min-height:188px; background:#fff; border:1px solid #edeef3; border-radius:18px; color:#acadb7; font-size:12px; gap:10px; }
+    .empty svg { width:28px; height:28px; opacity:.53; }
+    .photo-card { border:1px solid #e9eaf1; background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 5px 15px rgba(34,34,65,.022); }
+    .photo-frame { position:relative; background:repeating-conic-gradient(#f3f3f8 0% 25%,#fafafd 0% 50%) 50%/16px 16px; aspect-ratio:5/4; overflow:hidden; }
+    .photo-frame img { position:absolute; width:100%; height:100%; inset:0; object-fit:contain; pointer-events:none; }
+    .photo-frame .edited-image { clip-path:inset(0 0 0 var(--compare,50%)); display:none; }
+    .photo-frame.compare-ready .edited-image { display:block; }
+    .photo-frame[data-view="after"] .edited-image { clip-path:inset(0 0 0 0); }
+    .photo-frame[data-view="before"] .edited-image { display:none; }
+    .compare-line { display:none; position:absolute; left:var(--compare,50%); top:0; bottom:0; width:1px; background:rgba(255,255,255,.95); box-shadow:0 0 0 1px #2223; pointer-events:none; }
+    .photo-frame.compare-ready[data-view="compare"] .compare-line { display:block; }
+    .compare-line:after { content:"‹ ›"; font-weight:700; font-size:13px; letter-spacing:0; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:36px; height:26px; display:flex; align-items:center; justify-content:center; border-radius:99px; color:#7064ab; background:white; box-shadow:0 3px 16px #24213627; }
+    .image-ordinal { position:absolute; left:12px; top:12px; z-index:2; border-radius:8px; padding:4px 9px; font-size:11px; color:#65616b; background:#ffffffdd; backdrop-filter:blur(9px); font-weight:730; }
+    .remove-photo { position:absolute; right:10px; top:10px; z-index:3; width:27px; height:27px; border-radius:100%; background:#ffffffef; box-shadow:0 1px 6px #0001; border:none; color:#76747e; line-height:0; display:grid; place-items:center; }
+    .remove-photo:hover { background:#fff0ef; color:#9f544e; }
+    .remove-photo svg { width:14px; height:14px; }
+    .photo-meta { padding:13px 14px 14px; }
+    .photo-top { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+    .photo-name { font-size:12px; color:#5b5c65; font-weight:700; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; min-width:0; }
+    .photo-size { font-size:10px; color:#a3a4ae; white-space:nowrap; }
+    .photo-bottom { margin-top:10px; min-height:24px; display:flex; align-items:center; justify-content:space-between; gap:8px; }
+    .pill { font-size:10px; color:#9697a0; background:#f4f4f7; border-radius:6px; padding:3px 8px; }
+    .pill.complete { color:#6a60ac; background:#f2effb; }
+    .pill.active-ref { color:#6d62a8; background:#eeecfa; }
+    .ref-btn { font-size:10px; border:1px solid #e8e6f1; color:#8d87ad; padding:4px 8px; border-radius:7px; background:white; }
+    .ref-btn.selected { color:#6b5ca9; background:#f1eff9; border-color:#d8d2eb; }
+    .download-single { display:flex; align-items:center; gap:5px; border:0; background:transparent; font-weight:650; font-size:11px; color:#7566b9; padding:4px; }
+    .download-single svg { width:13px; height:13px; }
+    .compare-range { display:none; width:100%; margin:10px 0 -2px; height:12px; accent-color:#9387cf; }
+    .compare-range.visible { display:block; }
+    .exportbar { margin-top:17px; display:none; justify-content:space-between; align-items:center; gap:15px; border:1px solid #e8e6f2; border-radius:14px; background:#fff; padding:17px 19px; }
+    .exportbar.visible { display:flex; }
+    .exportbar strong { font-size:13px; font-weight:720; }
+    .exportbar span { display:block; color:#9b9ca7; font-size:11px; margin-top:3px; }
+    .download-btn { padding:11px 16px; white-space:nowrap; }
+    .footer { padding:0 0 36px; text-align:center; color:#adaeb9; font-size:11px; }
+    .info-strip { display:flex; justify-content:center; gap:25px; flex-wrap:wrap; margin-top:19px; color:#a0a0ae; font-size:11px; }
+    .info-strip span:before { content:"•"; margin-right:9px; color:#b5a9de; }
+    .sr-only { position:absolute; width:1px; height:1px; margin:-1px; padding:0; border:0; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; }
+    @media(max-width:790px) { .hero { padding-top:59px; } .grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .setting-grid { gap:20px; } .workspace-actions { align-items:flex-start; flex-direction:column; } .action-set { align-self:flex-end; } }
+    @media(max-width:550px) {
+      .container { padding:0 15px; } .topbar { padding-top:22px; }
+      .wordmark { font-size:21px; } .privacy { font-size:10px; } .privacy span { max-width:150px; }
+      .hero { padding:48px 0 30px; } h1 { font-size:30px; letter-spacing:-1.5px; }
+      .lead { font-size:12px; } .workspace { border-radius:18px; }
+      .workspace-head { padding:20px 16px 15px; } .upload-zone { margin:0 16px 17px; padding:28px 12px; }
+      .settings { padding:19px 16px; } .setting-grid { grid-template-columns:1fr; gap:21px; }
+      .workspace-actions { padding:17px 16px; } .action-set { width:100%; align-self:stretch; } .action-set .primary-btn { flex:1; min-width:0; white-space:nowrap; }
+      .progress-box { padding:0 16px 20px; } .status { margin:0 16px 17px; }
+      .results-head { align-items:flex-start; } .results-head h2 { font-size:16px; }
+      .grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+      .photo-frame { aspect-ratio:4/5; } .photo-meta { padding:10px; }
+      .photo-size { display:none; } .photo-bottom { flex-wrap:wrap; }
+      .image-ordinal { font-size:10px; left:7px; top:7px; } .remove-photo { right:7px; top:7px; }
+      .preview-switch button { padding:6px 8px; }
+      .exportbar { align-items:stretch; flex-direction:column; } .download-btn { width:100%; }
+    }
+    @media(prefers-reduced-motion:reduce){ *,*:before,*:after { transition:none !important; scroll-behavior:auto !important; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="topbar">
+      <div class="brand"><div class="brandmark" aria-hidden="true"><i></i><i></i><i></i><i></i></div><span class="wordmark">tonal.</span></div>
+      <div class="privacy"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><span>사진은 서버로 전송되지 않아요</span></div>
+    </header>
+    <section class="hero">
+      <span class="eyebrow">COLOR HARMONY STUDIO</span>
+      <h1>서로 다른 사진도,<br><em>하나의 색감으로.</em></h1>
+      <p class="lead">최대 6장의 사진을 함께 분석하고, 각 사진의 분위기는 살리면서<br>밝기와 화이트밸런스, 채도를 조화롭게 맞춥니다.</p>
+      <div class="info-strip"><span>회원가입 없음</span><span>오프라인 사용 가능</span><span>원본 해상도 보정</span></div>
+    </section>
+    <main>
+      <section class="workspace" aria-label="자동 색감 통일 도구">
+        <div class="workspace-head"><div><div class="section-title">사진 업로드</div><div class="section-detail">JPEG, PNG, WebP, AVIF · 1~6장</div></div><div class="counter"><strong id="counter">0</strong> / 6장</div></div>
+        <div id="dropzone" class="upload-zone" tabindex="0" role="button" aria-label="사진 추가, 파일 탐색 창 열기">
+          <div class="upload-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="16" rx="3"/><circle cx="8" cy="9" r="1.6"/><path d="m4 18 5.2-5.1 3.4 3.4 3.1-3.1L20 17"/></svg></div>
+          <h2>사진을 이곳에 끌어다 놓으세요</h2>
+          <p>서로 다른 장소와 조명의 사진도 괜찮아요</p>
+          <button type="button" id="pickBtn" class="secondary-btn">+ 사진 선택하기</button>
+          <span class="uploader-hint">사진 1장만 넣으면 단일 사진 자동 보정이 적용됩니다</span>
+        </div>
+        <input id="fileInput" type="file" accept="image/jpeg,image/png,image/webp,image/avif" multiple hidden>
+        <div class="settings">
+          <div class="setting-grid">
+            <div>
+              <div class="setting-label">색감 맞춤 방식</div>
+              <div class="segmented" id="modeControl" role="group" aria-label="색감 맞춤 방식">
+                <button type="button" class="segment active" data-mode="auto" aria-pressed="true">전체 자동 통일</button>
+                <button type="button" class="segment" data-mode="reference" aria-pressed="false">기준 사진에 맞추기</button>
+              </div>
+              <div class="setting-foot" id="modeDescription">모든 사진을 분석하여 자연스러운 공통 색감을 계산합니다.</div>
+            </div>
+            <div>
+              <div class="setting-label"><label for="strength">보정 강도</label><span class="range-value" id="strengthLabel">75%</span></div>
+              <div class="range-line"><input class="strength" type="range" id="strength" min="0" max="100" step="5" value="75"></div>
+              <div class="setting-foot">강도를 높이면 사진 간 색감 차이를 더 적극적으로 줄입니다.</div>
+            </div>
+          </div>
+        </div>
+        <div class="workspace-actions"><div class="notice" id="workNotice">색을 무조건 같게 만들지 않고 장면 고유의 색을 보호하도록 설계했습니다.</div>
+          <div class="action-set"><button id="clearBtn" type="button" class="clear-btn" disabled>모두 지우기</button><button id="processBtn" type="button" class="primary-btn" disabled>자동 색감 통일하기 →</button></div>
+        </div>
+        <div class="progress-box" id="progressBox" aria-live="polite"><div class="progress-meta"><span id="progressText">이미지를 분석하고 있습니다</span><span id="progressPercent">0%</span></div><div class="progress-track"><div class="progress-fill" id="progressFill"></div></div></div>
+        <div id="status" class="status" role="status" aria-live="polite"></div>
+      </section>
+      <section class="results" id="results" aria-label="사진 미리보기 및 저장">
+        <div class="results-head"><div><h2>미리보기 <span id="resultCount" style="color:#aa9fcd;font-weight:600;font-size:13px"></span></h2><p>보정 후에는 사진별 원본과 결과를 비교할 수 있어요.</p></div>
+          <div id="viewControl" class="preview-switch" role="group" aria-label="미리보기 모드"><button data-view="before">원본</button><button class="active" data-view="compare">비교</button><button data-view="after">보정</button></div>
+        </div>
+        <div id="imageGrid" class="grid"><div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="m5 17 4.5-5 4.3 4.3 2.2-2.1 3 3"/><circle cx="8.5" cy="8.5" r="1.4"/></svg><span>사진을 추가하면 여기에 표시됩니다.</span></div></div>
+        <div class="exportbar" id="exportBar"><div><strong>색감 통일이 완료되었습니다.</strong><span>각 사진의 원본 크기를 유지해 저장합니다. JPEG는 고품질 JPEG로, 투명도를 지원하는 PNG·WebP·AVIF는 PNG로 저장합니다.</span></div><button class="primary-btn download-btn" id="downloadAll" type="button">↓ 전체 ZIP 저장</button></div>
+      </section>
+    </main>
+    <footer class="footer">tonal. · 브라우저 안에서만 처리되는 개인용 이미지 도구<br>서로 다른 장면의 완벽한 전문가급 일치는 보장하지 않으며, 원본을 보존한 채 결과를 확인할 수 있습니다.</footer>
+  </div>
+<script>
+'use strict';
+(() => {
+  const MAX_FILES = 6;
+  const $ = (id) => document.getElementById(id);
+  const state = { photos: [], mode: 'auto', referenceId: null, strength: 75, view: 'compare', working: false, done: false, jobToken: 0, runner: null };
+  const icons = {
+    close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M6 6 18 18M18 6 6 18"/></svg>',
+    download: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m-4-4 4 4 4-4M4 17v3h16v-3"/></svg>'
+  };
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+  const safe = (value) => String(value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const prettySize = (bytes) => bytes < 1024 * 1024 ? `${(bytes/1024).toFixed(0)} KB` : `${(bytes/1024/1024).toFixed(1)} MB`;
+  const sleep = () => new Promise(resolve => setTimeout(resolve,0));
+  let idSequence = 0;
+
+  function flash(message, isError = false) {
+    const el = $('status'); el.textContent = message;
+    el.classList.add('visible'); el.classList.toggle('error', isError);
+  }
+  function clearFlash() { $('status').classList.remove('visible', 'error'); }
+  function progress(value, description) {
+    value = clamp(value, 0, 100);
+    $('progressBox').classList.add('visible');
+    $('progressFill').style.width = `${value}%`;
+    $('progressPercent').textContent = `${Math.round(value)}%`;
+    $('progressText').textContent = description;
+  }
+  function resetProgress() { $('progressBox').classList.remove('visible'); }
+  function updateControls() {
+    $('counter').textContent = state.photos.length;
+    $('clearBtn').disabled = !state.photos.length || state.working;
+    $('processBtn').disabled = !state.photos.length;
+    $('processBtn').textContent = state.working ? '처리 취소 ✕' : state.done ? '다시 보정하기 →' : '자동 색감 통일하기 →';
+    $('fileInput').disabled = state.working;
+    $('pickBtn').disabled = state.working || state.photos.length >= MAX_FILES;
+    $('dropzone').setAttribute('aria-disabled', String(state.working || state.photos.length >= MAX_FILES));
+    $('modeControl').querySelectorAll('button').forEach(b => b.disabled = state.working);
+    $('strength').disabled = state.working;
+    $('resultCount').textContent = state.photos.length ? `${state.photos.length}장` : '';
+    $('viewControl').classList.toggle('visible', state.photos.some(p => Boolean(p.resultUrl)));
+    $('exportBar').classList.toggle('visible', state.done && state.photos.length > 0);
+  }
+  function invalidate() {
+    state.done = false;
+    for (const p of state.photos) {
+      if (p.resultUrl) URL.revokeObjectURL(p.resultUrl);
+      p.resultUrl = null; p.blob = null; p.profile = null; p.compare = 50;
+    }
+    resetProgress(); clearFlash();
+  }
+  function drawCards() {
+    if (!state.photos.length) {
+      $('imageGrid').innerHTML = '<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="m5 17 4.5-5 4.3 4.3 2.2-2.1 3 3"/><circle cx="8.5" cy="8.5" r="1.4"/></svg><span>사진을 추가하면 여기에 표시됩니다.</span></div>';
+      updateControls(); return;
+    }
+    $('imageGrid').innerHTML = state.photos.map((p, i) => {
+      const result = Boolean(p.resultUrl);
+      const refMode = state.mode === 'reference' && state.photos.length > 1;
+      const refSelected = p.id === state.referenceId;
+      const badge = result ? '<span class="pill complete">보정 완료</span>' : `<span class="pill ${refSelected && refMode ? 'active-ref':''}">${refSelected && refMode ? '기준 이미지':'원본 대기'}</span>`;
+      return `<article class="photo-card" data-id="${p.id}">
+          <div class="photo-frame ${result ? 'compare-ready':''}" data-view="${state.view}" style="--compare:${p.compare}%">
+            <img class="original-image" src="${p.url}" alt="${safe(p.file.name)} 원본">
+            ${result ? `<img class="edited-image" src="${p.resultUrl}" alt="${safe(p.file.name)} 색감 보정 결과">` : ''}
+            <div class="compare-line" aria-hidden="true"></div>
+            <span class="image-ordinal">${String(i+1).padStart(2,'0')}</span>
+            <button type="button" class="remove-photo" title="이 사진 지우기" aria-label="${safe(p.file.name)} 지우기" data-action="remove" ${state.working ? 'disabled':''}>${icons.close}</button>
+          </div>
+          <div class="photo-meta"><div class="photo-top"><span class="photo-name" title="${safe(p.file.name)}">${safe(p.file.name)}</span><span class="photo-size">${prettySize(p.file.size)}</span></div>
+            <div class="photo-bottom">${badge}${refMode ? `<button type="button" class="ref-btn ${refSelected ? 'selected':''}" data-action="ref" ${state.working ? 'disabled':''}>${refSelected ? '기준 선택됨':'기준으로 선택'}</button>` : ''}${result ? `<button type="button" class="download-single" data-action="download">${icons.download} 저장</button>` : ''}</div>
+            ${result ? `<label class="sr-only" for="compare-${p.id}">사진 ${i+1} 원본과 보정 비교 위치</label><input id="compare-${p.id}" class="compare-range ${state.view === 'compare' ? 'visible':''}" type="range" min="0" max="100" value="${p.compare}" data-action="compare" aria-label="원본과 보정 결과 비교 비율">` : ''}
+          </div></article>`;
+    }).join('');
+    updateControls();
+  }
+  async function uploadFiles(files) {
+    if (state.working) return;
+    const candidates = Array.from(files).filter(f => f.type.startsWith('image/') && /^(image\/(jpeg|png|webp|avif))$/.test(f.type));
+    if (!candidates.length) { flash('지원되는 이미지(JPEG, PNG, WebP, AVIF)를 선택해주세요.', true); return; }
+    const remaining = MAX_FILES - state.photos.length;
+    if (remaining <= 0) { flash('최대 6장까지 추가할 수 있습니다.', true); return; }
+    if (candidates.some(f => f.size > 60 * 1024 * 1024)) {
+      flash('60MB를 초과하는 이미지가 있어 제외했습니다. 파일 크기를 줄여 다시 시도해주세요.', true);
+    }
+    const accepted = candidates.filter(f => f.size <= 60*1024*1024).slice(0, remaining);
+    if (!accepted.length) return;
+    invalidate();
+    for (const file of accepted) {
+      const item = { id:++idSequence, file, url:URL.createObjectURL(file), resultUrl:null, blob:null, profile:null, compare:50 };
+      state.photos.push(item);
+      if (state.referenceId === null) state.referenceId = item.id;
+    }
+    drawCards();
+    if (candidates.length > remaining) flash(`6장 제한으로 ${remaining}장만 추가했습니다.`, true);
+    else if (candidates.every(f => f.size <= 60*1024*1024)) clearFlash();
+  }
+  function removePhoto(id) {
+    if (state.working) return;
+    const at = state.photos.findIndex(p => p.id === id);
+    if (at === -1) return;
+    invalidate();
+    const [photo] = state.photos.splice(at,1);
+    URL.revokeObjectURL(photo.url);
+    if (state.referenceId === id) state.referenceId = state.photos[0]?.id ?? null;
+    drawCards();
+  }
+  function removeAll() {
+    if (state.working) return;
+    invalidate();
+    for (const p of state.photos) URL.revokeObjectURL(p.url);
+    state.photos = []; state.referenceId = null;
+    drawCards();
+  }
+
+  async function decode(file, sourceUrl) {
+    if (typeof createImageBitmap === 'function') {
+      try {
+        const bmp = await createImageBitmap(file);
+        return { image:bmp, width:bmp.width, height:bmp.height, close:() => bmp.close() };
+      } catch (_) { /* fallback to an HTML image element */ }
+    }
+    const element = await new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error('이미지 디코딩에 실패했습니다. 지원하지 않는 형식일 수 있습니다.'));
+      img.src = sourceUrl;
+    });
+    return { image:element, width:element.naturalWidth, height:element.naturalHeight, close:()=>{ element.src=''; } };
+  }
+  // OKLab is perceptually more uniform than RGB, so correction is applied to
+  // brightness and chromatic axes separately. All statistics stay local.
+  function srgbLinear(v) { v/=255; return v<=.04045 ? v/12.92 : ((v+.055)/1.055)**2.4; }
+  const linearInput = Float32Array.from({length:256}, (_,i) => srgbLinear(i));
+  function labFromRGB(r8, g8, b8) {
+    const r=linearInput[r8], g=linearInput[g8], b=linearInput[b8];
+    const l=Math.cbrt(.4122214708*r+.5363325363*g+.0514459929*b);
+    const m=Math.cbrt(.2119034982*r+.6806995451*g+.1073969566*b);
+    const s=Math.cbrt(.0883024619*r+.2817188376*g+.6299787005*b);
+    return [.2104542553*l+.7936177850*m-.0040720468*s,
+      1.9779984951*l-2.4285922050*m+.4505937099*s,
+      .0259040371*l+.7827717662*m-.8086757660*s];
+  }
+  function histogramQuantile(hist, q, scale) {
+    let total=0; for (const n of hist) total+=n;
+    if (!total) return 0;
+    let accumulated=0;
+    for (let i=0;i<hist.length;i++) { accumulated+=hist[i]; if(accumulated>=total*q) return i/(hist.length-1)*scale; }
+    return scale;
+  }
+  async function analyze(photo) {
+    const src = await decode(photo.file,photo.url);
+    try {
+      if (!src.width || !src.height || src.width * src.height > 110000000) throw new Error('이미지 크기를 처리할 수 없습니다.');
+      const size = 540; const factor = Math.min(1, size / Math.max(src.width,src.height));
+      const w=Math.max(1,Math.round(src.width*factor)),h=Math.max(1,Math.round(src.height*factor));
+      const canvas=document.createElement('canvas'); canvas.width=w; canvas.height=h;
+      const ctx=canvas.getContext('2d',{willReadFrequently:true,colorSpace:'srgb'});
+      if (!ctx) throw new Error('Canvas 기능을 사용할 수 없습니다.');
+      ctx.imageSmoothingQuality='high'; ctx.drawImage(src.image,0,0,w,h);
+      const pixels=ctx.getImageData(0,0,w,h).data;
+      const histL=new Float64Array(256), histC=new Float64Array(200);
+      let n=0, neutralWeight=0, neutralA=0, neutralB=0, weightedC=0;
+      for(let i=0;i<pixels.length;i+=4*2) {
+        if (pixels[i+3] < 220) continue;
+        const [L,a,b]=labFromRGB(pixels[i],pixels[i+1],pixels[i+2]);
+        const C=Math.hypot(a,b);
+        histL[Math.min(255,Math.max(0,Math.round(L*255)))]++;
+        if (L>.17 && L<.94) {
+          histC[Math.min(199,Math.round(Math.min(.40,C)/.4*199))]++;
+          weightedC+=C;
+        }
+        // Neutral areas are evidence for illumination; saturated backgrounds
+        // get almost no influence, reducing blue-sky / foliage color casts.
+        const midMask=clamp((L-.10)/.20,0,1)*clamp((.98-L)/.16,0,1);
+        const wNeutral=Math.exp(-Math.pow(C/.060,2))*midMask;
+        neutralWeight+=wNeutral;
+        neutralA+=a*wNeutral; neutralB+=b*wNeutral;
+        n++;
+      }
+      if (!n) throw new Error('투명 영역만 있는 이미지는 색감을 분석할 수 없습니다.');
+      const p10=histogramQuantile(histL,.10,1),p50=histogramQuantile(histL,.50,1),p90=histogramQuantile(histL,.90,1);
+      const chroma=histogramQuantile(histC,.58,.4);
+      const conf=clamp((neutralWeight/n-.025)/.25,0,1);
+      return { width:src.width, height:src.height, p10, p50, p90,
+        chroma, castA:neutralA/Math.max(.0001,neutralWeight),
+        castB:neutralB/Math.max(.0001,neutralWeight), conf, neutralPercent:neutralWeight/n };
+    } finally { src.close(); }
+  }
+  function weightedAverage(profiles, index, field, refIdx) {
+    const me=profiles[index];
+    if(refIdx >= 0) return profiles[refIdx][field];
+    let sum=0,weight=0;
+    profiles.forEach((peer,j)=>{
+      const sceneDelta=(peer.p50-me.p50)/.235;
+      const sceneWeight=Math.exp(-.5*sceneDelta*sceneDelta);
+      const w=(j===index ? .65 : sceneWeight);
+      sum+=peer[field]*w; weight+=w;
+    });
+    return sum/Math.max(weight,.00001);
+  }
+  function tonemapSettings(x,y) {
+    const delta=[];
+    for(let i=0;i<4;i++) delta.push((y[i+1]-y[i])/Math.max(.001,x[i+1]-x[i]));
+    const slope=new Array(5);
+    slope[0]=delta[0]; slope[4]=delta[3];
+    for(let i=1;i<4;i++) {
+      const d0=delta[i-1],d1=delta[i];
+      slope[i]=(d0>0 && d1>0) ? (2*d0*d1/(d0+d1)) : 0;
+    }
+    // Slope caps avoid aggressive local contrast spikes.
+    slope[0]=Math.min(slope[0],2.5); slope[4]=Math.min(slope[4],2.5);
+    return {x,y,slope};
+  }
+  function calculateSettings(profiles, index) {
+    const me=profiles[index];
+    const refIdx=state.mode === 'reference' ? Math.max(0,state.photos.findIndex(p=>p.id===state.referenceId)) : -1;
+    const intensity=state.strength/100;
+    const groupN=profiles.length;
+    const toneMix = groupN>1 ? intensity*.74 : intensity*.40;
+    const target10=weightedAverage(profiles,index,'p10',refIdx);
+    const target50=weightedAverage(profiles,index,'p50',refIdx);
+    const target90=weightedAverage(profiles,index,'p90',refIdx);
+    let d10=clamp((target10-me.p10)*toneMix,-.047,.047);
+    let d50=clamp((target50-me.p50)*toneMix,-.070,.070);
+    let d90=clamp((target90-me.p90)*toneMix,-.047,.047);
+    if(groupN===1) { // Very gentle dynamic-range cleanup for a single photo.
+      if(me.p90-me.p10<.42) { d10-=.005*intensity; d90+=.005*intensity; }
+      if(me.p50>.88) d50=-.012*intensity;
+      if(me.p50<.16 && me.p90>.45) d50=.012*intensity;
+    }
+    const x=[0, Math.max(.002,me.p10), Math.max(.004,me.p50), Math.min(.998,me.p90),1];
+    // Handle almost-flat inputs without division by zero or reversed intervals.
+    for(let k=1;k<4;k++) x[k]=Math.max(x[k],x[k-1]+.004);
+    if(x[3]>.995) { x[3]=.995; for(let k=2;k>=1;k--) x[k]=Math.min(x[k],x[k+1]-.004); }
+    const y=[0,x[1]+d10,x[2]+d50,x[3]+d90,1];
+    // Keep the curve monotonic without artificially pushing nearly-flat photos.
+    y[1]=clamp(y[1],.001,.996);
+    y[2]=clamp(y[2],y[1]+.001,.997);
+    y[3]=clamp(y[3],y[2]+.001,.999);
+    const chromaTarget=weightedAverage(profiles,index,'chroma',refIdx);
+    const chromaRatio=me.chroma>.012 && chromaTarget>.012 ? Math.pow(chromaTarget/me.chroma,.34*intensity) : 1;
+    const satGain=clamp(chromaRatio,.88,1.12);
+    const targetCastA=weightedAverage(profiles,index,'castA',refIdx)*.86;
+    const targetCastB=weightedAverage(profiles,index,'castB',refIdx)*.86;
+    const castA=clamp((me.castA-targetCastA)*intensity*me.conf*.68,-.022,.022);
+    const castB=clamp((me.castB-targetCastB)*intensity*me.conf*.68,-.028,.028);
+    return { tone:tonemapSettings(x,y), satGain,castA,castB };
+  }
+
+  // This pure function is serialized into a local Blob Worker; no network call,
+  // model download, or third-party package is necessary.
+  function applyColorTransform(buffer, params, onProgress) {
+    const data=new Uint8ClampedArray(buffer);
+    const {tone,satGain,castA,castB}=params;
+    const toLin=new Float32Array(256);
+    for(let n=0;n<256;n++){ let v=n/255;toLin[n]=v<=.04045?v/12.92:Math.pow((v+.055)/1.055,2.4); }
+    const srgbTable=new Uint8ClampedArray(16385);
+    for(let n=0;n<16385;n++){ const x=n/16384;srgbTable[n]=Math.round(255*(x<=.0031308?12.92*x:1.055*Math.pow(x,1/2.4)-.055)); }
+    const clip=(v,a,b)=>Math.max(a,Math.min(b,v));
+    const linToByte=(v)=>srgbTable[Math.round(clip(v,0,1)*16384)];
+    const toRGB=(L,a,b)=>{
+      const l=L+.3963377774*a+.2158037573*b;
+      const m=L-.1055613458*a-.0638541728*b;
+      const s=L-.0894841775*a-1.291485548*b;
+      const ll=l*l*l,mm=m*m*m,ss=s*s*s;
+      return [4.0767416621*ll-3.3077115913*mm+.2309699292*ss,
+        -1.2684380046*ll+2.6097574011*mm-.3413193965*ss,
+        -.0041960863*ll-.7034186147*mm+1.707614701*ss];
+    };
+    const toneMap=(L)=>{
+      const x=tone.x,y=tone.y,m=tone.slope;
+      let k=L<x[1]?0:L<x[2]?1:L<x[3]?2:3;
+      const interval=Math.max(.001,x[k+1]-x[k]);
+      const u=clip((L-x[k])/interval,0,1),u2=u*u,u3=u2*u;
+      return clip((2*u3-3*u2+1)*y[k]+(u3-2*u2+u)*interval*m[k]+(-2*u3+3*u2)*y[k+1]+(u3-u2)*interval*m[k+1],0,1);
+    };
+    const pixelCount=data.length/4;
+    for(let i=0;i<data.length;i+=4){
+      if(data[i+3]<4) continue;
+      const R=data[i],G=data[i+1],B=data[i+2];
+      const r=toLin[R],g=toLin[G],b=toLin[B];
+      const l=Math.cbrt(.4122214708*r+.5363325363*g+.0514459929*b);
+      const m=Math.cbrt(.2119034982*r+.6806995451*g+.1073969566*b);
+      const s=Math.cbrt(.0883024619*r+.2817188376*g+.6299787005*b);
+      const L=.2104542553*l+.7936177850*m-.0040720468*s;
+      const A=1.9779984951*l-2.428592205*m+.4505937099*s;
+      const BB=.0259040371*l+.7827717662*m-.808675766* s;
+      const C=Math.hypot(A,BB);
+      let nextL=toneMap(L);
+      // Neutral and low-saturation areas receive more white-balance correction.
+      const neutralFactor=.57+.43*Math.exp(-Math.pow(C/.095,2));
+      const cb=128-.168736*R-.331264*G+.5*B;
+      const cr=128+.5*R-.418688*G-.081312*B;
+      // Conservative YCbCr skin guard also protects warm highlights from large shifts.
+      const skin=(R>G && G>B && R>80 && cb>=79 && cb<=132 && cr>=133 && cr<=175 && L>.29 && L<.92);
+      const skinKeep=skin?.42:1;
+      let nextA=A-castA*neutralFactor*skinKeep;
+      let nextB=BB-castB*neutralFactor*skinKeep;
+      const softSat=1+(satGain-1)*(.92-.35*clip(C/.28,0,1))*(skin?.48:1);
+      nextA*=softSat; nextB*=softSat;
+      nextL=clip(nextL,.00001,.99999);
+      let channels=toRGB(nextL,nextA,nextB);
+      if(channels[0]<-.0003 || channels[0]>1.0003 || channels[1]<-.0003 || channels[1]>1.0003 || channels[2]<-.0003 || channels[2]>1.0003){
+        // Gamut mapping: reduce chroma, rather than independently clipping RGB.
+        let lo=0,hi=1,good=toRGB(nextL,0,0);
+        for(let k=0;k<6;k++) {
+          const t=(lo+hi)/2,test=toRGB(nextL,nextA*t,nextB*t);
+          if(test.every(v=>v>=0 && v<=1)){lo=t;good=test;}else hi=t;
+        }
+        channels=good;
+      }
+      data[i]=linToByte(channels[0]);
+      data[i+1]=linToByte(channels[1]);
+      data[i+2]=linToByte(channels[2]);
+      if(onProgress && (i & ((1<<21)-1))===0) onProgress(i/data.length);
+    }
+    if(onProgress) onProgress(1);
+    return data.buffer;
+  }
+
+  function createRunner() {
+    if(typeof Worker === 'undefined' || typeof URL.createObjectURL !== 'function') return null;
+    const workerScript = `const transform=${applyColorTransform.toString()};\nself.onmessage = e => {\n` +
+      `  const {id,buffer,params}=e.data;\n` +
+      `  try { const out=transform(buffer,params,ratio=>{ if(ratio===1) return; self.postMessage({id,type:'progress',ratio}); }); self.postMessage({id,type:'done',buffer:out},[out]); }\n` +
+      `  catch(err) { self.postMessage({id,type:'error',message:String(err.message||err)}); }\n};`;
+    let worker=null,blobUrl=null;
+    try {
+      blobUrl=URL.createObjectURL(new Blob([workerScript],{type:'text/javascript'}));
+      worker=new Worker(blobUrl);
+      URL.revokeObjectURL(blobUrl); blobUrl=null;
+      const runner={worker,pending:null,currentId:0,close(){
+        if(this.pending){this.pending.reject(new Error('canceled'));this.pending=null;}
+        this.worker.terminate();
+      },process(buffer,params,onProgress){
+        return new Promise((resolve,reject)=>{
+          const id=++this.currentId;
+          this.pending={id,resolve,reject,onProgress};
+          this.worker.postMessage({id,buffer,params},[buffer]);
+        });
+      }};
+      worker.onmessage = (e)=>{
+        const {id,type,ratio,buffer,message}=e.data;
+        const p=runner.pending; if(!p || id!==p.id) return;
+        if(type==='progress') p.onProgress(ratio);
+        else { runner.pending=null; if(type==='done') p.resolve(buffer); else p.reject(new Error(message)); }
+      };
+      worker.onerror = (e)=>{ if(runner.pending){const p=runner.pending;runner.pending=null;p.reject(new Error(`이미지 처리 오류: ${e.message||'Worker 오류'}`));} };
+      return runner;
+    }catch(e){ if(worker)worker.terminate(); if(blobUrl)URL.revokeObjectURL(blobUrl);return null; }
+  }
+  async function transformTile(imageData,params,onProgress) {
+    if(state.runner) return await state.runner.process(imageData.data.buffer,params,onProgress);
+    // Main-thread fallback for browsers blocking local Blob workers.
+    await sleep();
+    return applyColorTransform(imageData.data.buffer,params,onProgress);
+  }
+  async function encodeCanvas(canvas,mime,quality) {
+    return await new Promise((resolve,reject)=>{
+      try { canvas.toBlob(b=>b?resolve(b):reject(new Error('이미지 저장용 인코딩에 실패했습니다.')),mime,quality); }
+      catch(e){ reject(e); }
+    });
+  }
+  async function renderHighRes(photo,settings,jobToken,onProgress) {
+    const src=await decode(photo.file,photo.url);
+    let out=null,tile=null;
+    try {
+      // Unchanged dimensions, tiled CPU processing (bounded temporary memory).
+      if(src.width*src.height>53000000 || src.width>11000 || src.height>11000) throw new Error('53MP 또는 가로·세로 11,000px를 넘는 이미지는 브라우저 메모리 보호를 위해 지원하지 않습니다.');
+      out=document.createElement('canvas');out.width=src.width;out.height=src.height;
+      const outCtx=out.getContext('2d',{alpha:true,colorSpace:'srgb'});
+      if(!outCtx)throw new Error('출력용 캔버스를 만들 수 없습니다.');
+      tile=document.createElement('canvas'); tile.width=src.width;
+      const tileHeight=Math.max(96,Math.min(450,Math.floor(1800000/src.width)));
+      tile.height=Math.min(src.height,tileHeight);
+      const tileCtx=tile.getContext('2d',{willReadFrequently:true,colorSpace:'srgb'});
+      if(!tileCtx) throw new Error('이미지 분석 캔버스를 만들 수 없습니다.');
+      for(let y=0;y<src.height;y+=tileHeight){
+        if(jobToken!==state.jobToken) throw new Error('canceled');
+        const h=Math.min(tileHeight,src.height-y);
+        tileCtx.clearRect(0,0,src.width,tile.height);
+        tileCtx.drawImage(src.image,0,y,src.width,h,0,0,src.width,h);
+        const img=tileCtx.getImageData(0,0,src.width,h);
+        const converted=await transformTile(img,settings,ratio=>onProgress((y+h*ratio)/src.height));
+        if(jobToken!==state.jobToken) throw new Error('canceled');
+        outCtx.putImageData(new ImageData(new Uint8ClampedArray(converted),src.width,h),0,y);
+        onProgress((y+h)/src.height);
+        await sleep();
+      }
+      const format=photo.file.type==='image/jpeg'?'image/jpeg':'image/png';
+      const blob=await encodeCanvas(out,format,.96);
+      return {blob, url:URL.createObjectURL(blob)};
+    } finally {
+      if(out){out.width=0;out.height=0;}
+      if(tile){tile.width=0;tile.height=0;}
+      src.close();
+    }
+  }
+  function cancel() {
+    if(!state.working)return;
+    state.jobToken++;
+    state.working=false;
+    state.runner?.close();state.runner=null;
+    invalidate();
+    flash('작업을 취소했습니다. 원본 사진은 그대로 유지됩니다.');
+    drawCards();
+  }
+  async function runCorrection() {
+    if(state.working){ cancel();return; }
+    if(!state.photos.length)return;
+    clearFlash(); invalidate();
+    const token=++state.jobToken;
+    state.working=true;
+    updateControls();
+    state.runner=createRunner();
+    try {
+      const profiles=[];
+      for(let i=0;i<state.photos.length;i++) {
+        if(token!==state.jobToken)throw new Error('canceled');
+        progress(2+(i/state.photos.length)*15,`사진 ${i+1}/${state.photos.length} 색상·조명 분석 중…`);
+        profiles.push(await analyze(state.photos[i]));
+        await sleep();
+      }
+      progress(18,'사진 사이의 공통 색감을 계산하고 있어요…');
+      const settings=profiles.map((_,i)=>calculateSettings(profiles,i));
+      for(let i=0;i<state.photos.length;i++) {
+        if(token!==state.jobToken)throw new Error('canceled');
+        const p=state.photos[i];p.profile=profiles[i];
+        const base=20+i/state.photos.length*77;
+        const {blob,url}=await renderHighRes(p,settings[i],token,(fraction)=>{
+          progress(base+fraction*77/state.photos.length,`사진 ${i+1}/${state.photos.length} 원본 해상도 보정 중…`);
+        });
+        p.blob=blob;p.resultUrl=url;
+        drawCards();
+        await sleep();
+      }
+      if(token!==state.jobToken)throw new Error('canceled');
+      state.done=true;
+      progress(100, '모든 사진의 보정이 완료되었습니다.');
+      flash('보정 결과를 확인해 주세요. 사진 아래 슬라이더로 원본과 비교할 수 있습니다.');
+      drawCards();
+      $('results').scrollIntoView({behavior:'smooth',block:'start'});
+    }catch(err){
+      if(token!==state.jobToken)return;
+      invalidate();
+      flash(err.message==='canceled'?'작업을 취소했습니다.':`보정 중 오류가 발생했습니다: ${err.message}`,true);
+      drawCards();
+    }finally{
+      if(token===state.jobToken){
+        state.working=false;state.runner?.close();state.runner=null;
+        updateControls();
+      }
+    }
+  }
+
+  function safeBasename(fileName,index,ext) {
+    const stem=fileName.replace(/\.[^.]*$/,'').replace(/[\\/:*?"<>|\x00-\x1F]/g,'_').trim().slice(0,78)||'photo';
+    return `${String(index+1).padStart(2,'0')}_${stem}_tonal.${ext}`;
+  }
+  function resultName(p,i){return safeBasename(p.file.name,i,p.file.type==='image/jpeg'?'jpg':'png');}
+  function saveBlob(blob,name) {
+    const url=URL.createObjectURL(blob);
+    const link=document.createElement('a');link.href=url;link.download=name;
+    document.body.append(link);link.click();link.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),120000);
+  }
+  // Dependency-free ZIP (stored entries, UTF-8 filenames, CRC32).
+  const crcTable=(()=>{const table=new Uint32Array(256);for(let n=0;n<256;n++){let v=n;for(let k=0;k<8;k++)v=v&1?0xedb88320^(v>>>1):v>>>1;table[n]=v>>>0;}return table;})();
+  function crc32(data){let crc=0xffffffff;for(let i=0;i<data.length;i++)crc=crcTable[(crc^data[i])&255]^(crc>>>8);return (crc^0xffffffff)>>>0;}
+  function zipHeader(sig,len){const arr=new Uint8Array(len);const dv=new DataView(arr.buffer);dv.setUint32(0,sig,true);return {arr,dv};}
+  async function makeZip(items) {
+    const encoder=new TextEncoder(),parts=[],central=[];
+    let offset=0;
+    const time=new Date(); const year=clamp(time.getFullYear(),1980,2107);
+    const dosTime=(time.getHours()<<11)|(time.getMinutes()<<5)|(Math.floor(time.getSeconds()/2));
+    const dosDate=((year-1980)<<9)|((time.getMonth()+1)<<5)|time.getDate();
+    for(const item of items){
+      const bytes=new Uint8Array(await item.blob.arrayBuffer());
+      const name=encoder.encode(item.name); const crc=crc32(bytes),size=bytes.byteLength;
+      const local=zipHeader(0x04034b50,30);
+      local.dv.setUint16(4,20,true);local.dv.setUint16(6,0x800,true);
+      local.dv.setUint16(8,0,true);local.dv.setUint16(10,dosTime,true);
+      local.dv.setUint16(12,dosDate,true);local.dv.setUint32(14,crc,true);
+      local.dv.setUint32(18,size,true);local.dv.setUint32(22,size,true);
+      local.dv.setUint16(26,name.length,true);
+      parts.push(local.arr,name,bytes);
+      const dir=zipHeader(0x02014b50,46);
+      dir.dv.setUint16(4,20,true);dir.dv.setUint16(6,20,true);
+      dir.dv.setUint16(8,0x800,true);dir.dv.setUint16(10,0,true);
+      dir.dv.setUint16(12,dosTime,true);dir.dv.setUint16(14,dosDate,true);
+      dir.dv.setUint32(16,crc,true);dir.dv.setUint32(20,size,true);
+      dir.dv.setUint32(24,size,true);dir.dv.setUint16(28,name.length,true);
+      dir.dv.setUint32(42,offset,true);
+      central.push(dir.arr,name);
+      offset+=local.arr.length+name.length+size;
+    }
+    const centralSize=central.reduce((sum,p)=>sum+p.length,0);
+    const end=zipHeader(0x06054b50,22);
+    end.dv.setUint16(8,items.length,true);end.dv.setUint16(10,items.length,true);
+    end.dv.setUint32(12,centralSize,true);end.dv.setUint32(16,offset,true);
+    return new Blob([...parts,...central,end.arr],{type:'application/zip'});
+  }
+  async function downloadAll() {
+    if(!state.done || state.working)return;
+    const button=$('downloadAll'),label=button.textContent;
+    button.disabled=true;button.textContent='ZIP 만드는 중…';
+    try {
+      const items=state.photos.map((p,i)=>({blob:p.blob,name:resultName(p,i)}));
+      const zip=await makeZip(items);
+      saveBlob(zip,`tonal_색감통일_${items.length}장.zip`);
+    }catch(err){flash(`ZIP 저장 중 오류가 발생했습니다: ${err.message}`,true);}
+    finally {button.textContent=label;button.disabled=false;}
+  }
+
+  $('pickBtn').addEventListener('click',e=>{e.stopPropagation();$('fileInput').click();});
+  $('dropzone').addEventListener('click',()=>{if(!state.working && state.photos.length<MAX_FILES)$('fileInput').click();});
+  $('dropzone').addEventListener('keydown',e=>{if(e.target!==$('dropzone'))return;if(e.key==='Enter'||e.key===' '){e.preventDefault();$('dropzone').click();}});
+  $('fileInput').addEventListener('change',async e=>{await uploadFiles(e.target.files);e.target.value='';});
+  let dragLevel=0;
+  document.addEventListener('dragover',e=>{if(e.dataTransfer?.types?.includes('Files'))e.preventDefault();});
+  document.addEventListener('drop',e=>{if(e.dataTransfer?.files?.length && !e.target.closest('#dropzone'))e.preventDefault();});
+  $('dropzone').addEventListener('dragenter',e=>{e.preventDefault();dragLevel++;$('dropzone').classList.add('dragging');});
+  $('dropzone').addEventListener('dragover',e=>e.preventDefault());
+  $('dropzone').addEventListener('dragleave',e=>{e.preventDefault();dragLevel=Math.max(0,dragLevel-1);if(!dragLevel)$('dropzone').classList.remove('dragging');});
+  $('dropzone').addEventListener('drop',async e=>{e.preventDefault();dragLevel=0;$('dropzone').classList.remove('dragging');await uploadFiles(e.dataTransfer.files);});
+  $('clearBtn').addEventListener('click',removeAll);
+  $('processBtn').addEventListener('click',runCorrection);
+  $('downloadAll').addEventListener('click',downloadAll);
+  $('modeControl').addEventListener('click',e=>{
+    const b=e.target.closest('button[data-mode]');if(!b || state.working)return;
+    const mode=b.dataset.mode;if(mode===state.mode)return;
+    state.mode=mode;
+    $('modeControl').querySelectorAll('button').forEach(el=>{const on=el===b;el.classList.toggle('active',on);el.setAttribute('aria-pressed',String(on));});
+    $('modeDescription').textContent=mode==='auto' ? '모든 사진을 분석하여 자연스러운 공통 색감을 계산합니다.' : '사진 카드에서 기준 사진을 고르세요. 장면별 밝기는 무리하게 같게 만들지 않습니다.';
+    invalidate();drawCards();
+  });
+  $('strength').addEventListener('input',e=>{$('strengthLabel').textContent=e.target.value+'%';});
+  $('strength').addEventListener('change',e=>{state.strength=Number(e.target.value);invalidate();drawCards();});
+  $('viewControl').addEventListener('click',e=>{
+    const b=e.target.closest('button[data-view]');if(!b)return;
+    state.view=b.dataset.view;
+    $('viewControl').querySelectorAll('button').forEach(el=>el.classList.toggle('active',el===b));
+    $('imageGrid').querySelectorAll('.photo-frame').forEach(el=>el.dataset.view=state.view);
+    $('imageGrid').querySelectorAll('.compare-range').forEach(el=>el.classList.toggle('visible',state.view==='compare'));
+  });
+  $('imageGrid').addEventListener('click',e=>{
+    const b=e.target.closest('button[data-action]');if(!b)return;
+    const photo=state.photos.find(p=>p.id===Number(b.closest('.photo-card')?.dataset.id));if(!photo)return;
+    const action=b.dataset.action;
+    if(action==='remove')removePhoto(photo.id);
+    else if(action==='ref') {state.referenceId=photo.id;invalidate();drawCards();}
+    else if(action==='download' && photo.blob)saveBlob(photo.blob,resultName(photo,state.photos.indexOf(photo)));
+  });
+  $('imageGrid').addEventListener('input',e=>{
+    if(e.target.dataset.action!=='compare')return;
+    const card=e.target.closest('.photo-card'); const photo=state.photos.find(p=>p.id===Number(card.dataset.id));
+    if(!photo)return;
+    photo.compare=Number(e.target.value);
+    card.querySelector('.photo-frame').style.setProperty('--compare',photo.compare+'%');
+  });
+  window.addEventListener('beforeunload',()=>{
+    for(const p of state.photos){URL.revokeObjectURL(p.url);if(p.resultUrl)URL.revokeObjectURL(p.resultUrl);}
+    state.runner?.close();
+  });
+  updateControls();
+})();
+</script>
+</body>
+</html>
