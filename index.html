@@ -41,6 +41,71 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 
 .status{position:fixed;z-index:45;top:88px;right:25px;max-width:min(420px,calc(100vw - 40px));margin:0;padding:13px 16px;box-shadow:0 12px 34px #0002;background:#fafafa;border-left:3px solid #505050;color:#2c2c2c;font-size:12px}.status.error{background:#f1f1f1;color:#303030;border-left-color:#171717}@media(max-width:720px){.status{top:112px;left:14px;right:14px;max-width:none}}
+
+/* Compact preview and unobstructed mobile detail controls */
+@media (min-width:926px) {
+  .grid {max-width:890px; margin-inline:auto; grid-template-columns:repeat(3,minmax(0,240px)); justify-content:center;}
+}
+@media (min-width:721px) and (max-width:925px) {
+  .grid {max-width:630px; margin-inline:auto; grid-template-columns:repeat(2,minmax(0,225px)); justify-content:center;}
+}
+@media (min-width:721px) {
+  .collage-checker canvas {max-height:min(54dvh,485px);}
+  .collage-preview-shell {min-height:0; padding-bottom:24px;}
+}
+@media (max-width:720px) {
+  :root {
+    --mobile-preview-height:clamp(155px,31dvh,256px);
+    --mobile-footer-height:calc(76px + max(0px, env(safe-area-inset-bottom) - 12px));
+  }
+  .grid {max-width:450px; margin-inline:auto;}
+  .collage-preview-column {height:auto; min-height:0; overflow:visible; padding-bottom:var(--mobile-footer-height);}
+  .collage-preview-shell {flex:none; min-height:0; height:min(44dvh,355px); padding:4px 18px 16px;}
+  .collage-checker canvas {max-width:calc(100vw - 36px); max-height:min(38dvh,315px);}
+  body.sheet-open {overflow:hidden;}
+  /* Preview is a separate, always-visible pane while settings are expanded. */
+  body.sheet-open .stage,
+  body.sheet-open .collage-preview-column {
+    position:fixed; z-index:32; left:0; right:0; top:106px;
+    width:100%; height:var(--mobile-preview-height); min-height:0;
+    overflow-y:auto; overscroll-behavior:contain; padding-bottom:0;
+  }
+  body.sheet-open .stage-toolbar {padding:8px 14px 10px;}
+  body.sheet-open .grid {grid-template-columns:repeat(3,minmax(0,1fr)); padding:0 11px 14px; gap:9px;}
+  body.sheet-open .photo-frame {aspect-ratio:1/1;}
+  body.sheet-open .photo-meta {min-height:0; padding-top:4px;}
+  body.sheet-open .photo-name {font-size:9px; padding-top:2px;}
+  body.sheet-open .photo-actions {gap:2px;}
+  body.sheet-open .ref-btn {font-size:8px; padding:3px;}
+  body.sheet-open .stage-footer {display:none;}
+  body.sheet-open .collage-preview-head {padding:8px 16px 6px; flex:none;}
+  body.sheet-open .collage-preview-shell {height:auto; flex:1; min-height:0; padding:0 12px 9px;}
+  body.sheet-open .collage-checker {max-height:100%;}
+  body.sheet-open .collage-checker canvas {max-height:calc(var(--mobile-preview-height) - 54px); max-width:calc(100vw - 44px);}
+  /* Settings dock below the preview instead of sliding over it. */
+  body.sheet-open .studio-layout>.workspace:not([hidden]),
+  body.sheet-open .collage-controls:not([hidden]) {
+    position:fixed; top:calc(106px + var(--mobile-preview-height));
+    right:0; left:0; bottom:var(--mobile-footer-height);
+    height:auto; min-height:0; max-height:none;
+    z-index:35; visibility:visible; transform:none;
+    border:0; border-top:1px solid #dddddd;
+    border-radius:0; box-shadow:none;
+  }
+  body.sheet-open .panel-head {padding:13px 18px 10px;}
+  body.sheet-open .panel-head h2 {font-size:15px;}
+  body.sheet-open .panel-scroll {padding:0 18px 12px; -webkit-overflow-scrolling:touch;}
+  body.sheet-open .setting-block,
+  body.sheet-open .collage-section .setting-block {padding:13px 0 15px;}
+  body.sheet-open .setting-label,
+  body.sheet-open .collage-control-label {margin-bottom:11px;}
+  body.sheet-open .workspace-actions {padding:9px 18px 9px;}
+  body.sheet-open .workspace-actions .primary-btn {display:none;}
+  body.sheet-open .clear-btn {padding:3px 4px;}
+  body.sheet-open .sheet-scrim {display:none!important;}
+  body.sheet-open .mobile-bar {z-index:38;}
+  body.sheet-open .mobile-tools-toggle {background:#ededed;}
+}
 </style>
 </head>
 <body>
@@ -199,7 +264,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     $('tabCollage').classList.toggle('active',activeScreen==='collage');
     $('tabColor').setAttribute('aria-current',activeScreen==='color'?'page':'false');
     $('tabCollage').setAttribute('aria-current',activeScreen==='collage'?'page':'false');
-    $('mobileToolsLabel').textContent=activeScreen==='collage'?UI.collageSettings:UI.editSettings;
+    syncToolsToggle();
     $('mobilePrimary').textContent=activeScreen==='collage'?UI.collageSave:state.working?UI.cancel:state.done?UI.retry:UI.process;
     $('mobilePrimary').disabled=activeScreen==='collage'?(!total || state.working || collageSaving):!total;
   }
@@ -1014,11 +1079,24 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
   });
   $('dialogClose').addEventListener('click',()=>$('photoDialog').close());
   $('photoDialog').addEventListener('click',e=>{if(e.target===$('photoDialog'))$('photoDialog').close();});
-  function closeTools(){document.body.classList.remove('sheet-open');}
-  function openTools(){if(state.photos.length)document.body.classList.add('sheet-open');}
+  function syncToolsToggle(){
+    const open=document.body.classList.contains('sheet-open');
+    $('mobileToolsToggle').setAttribute('aria-expanded',String(open));
+    $('mobileToolsToggle').setAttribute('aria-controls',activeScreen==='collage'?'collageSection':'editorView');
+    $('mobileToolsLabel').textContent=open?'설정 닫기':activeScreen==='collage'?UI.collageSettings:UI.editSettings;
+  }
+  function closeTools(){document.body.classList.remove('sheet-open');syncToolsToggle();}
+  function openTools(){
+    if(!state.photos.length)return;
+    if(document.body.classList.contains('sheet-open')){closeTools();return;}
+    window.scrollTo({top:0,behavior:'instant'});
+    document.body.classList.add('sheet-open');
+    syncToolsToggle();
+  }
   $('sheetScrim').addEventListener('click',closeTools);
   document.querySelectorAll('[data-close-sheet]').forEach(b=>b.addEventListener('click',closeTools));
   $('mobileToolsToggle').addEventListener('click',openTools);
+  window.matchMedia('(max-width: 720px)').addEventListener('change',e=>{if(!e.matches)closeTools();});
   $('mobilePrimary').addEventListener('click',()=>{
     closeTools();
     if(activeScreen==='collage')downloadCollage();else runCorrection();
