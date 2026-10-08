@@ -68,6 +68,8 @@
     .range-line { display:flex; align-items:center; gap:13px; min-height:36px; }
     input[type="range"] { accent-color:var(--accent); cursor:pointer; }
     .strength { width:100%; min-width:0; }
+    .strength-scale { display:flex; justify-content:space-between; color:#a0a1ae; font-size:10px; margin-top:1px; font-variant-numeric:tabular-nums; }
+    .strength-scale span:nth-child(2) { color:#8e83ba; }
     .range-value { flex:none; color:#6d63ab; font-weight:750; font-size:12px; min-width:35px; text-align:right; }
     .setting-foot { color:#a0a1ae; font-size:11px; margin-top:8px; line-height:1.7; }
     .workspace-actions { border-top:1px solid #f0f0f5; padding:20px 27px; display:flex; justify-content:space-between; align-items:center; gap:15px; }
@@ -129,6 +131,43 @@
     .exportbar strong { font-size:13px; font-weight:720; }
     .exportbar span { display:block; color:#9b9ca7; font-size:11px; margin-top:3px; }
     .download-btn { padding:11px 16px; white-space:nowrap; }
+    /* Collage studio lives in the original page; no fonts, scripts or APIs are fetched. */
+    .collage-section[hidden] { display:none !important; }
+    .collage-section { margin-top:19px; padding:25px 26px 27px; background:#fff; border:1px solid #e7e7f0; border-radius:20px; box-shadow:var(--shadow); }
+    .collage-heading { display:flex; align-items:center; gap:11px; padding-bottom:22px; border-bottom:1px solid #f0f0f5; }
+    .collage-heading-icon { width:40px; height:40px; flex:none; display:grid; place-items:center; background:#f0eefb; border-radius:12px; color:#8274bf; }
+    .collage-heading-icon svg { width:21px; height:21px; }
+    .collage-heading h2 { font-size:17px; font-weight:740; line-height:1.45; letter-spacing:-.5px; margin:0; }
+    .collage-heading p { color:#999ba7; font-size:11px; margin:2px 0 0; }
+    .collage-body { display:grid; grid-template-columns:minmax(270px,.95fr) minmax(0,1.17fr); gap:30px; margin-top:24px; align-items:start; }
+    .collage-controls { display:grid; gap:22px; min-width:0; }
+    .collage-control-label { font-size:12px; font-weight:700; color:#545767; margin-bottom:10px; }
+    .collage-segmented { max-width:none; }
+    .collage-segmented .segment { min-height:36px; }
+    .collage-ratios { display:flex; gap:7px; flex-wrap:wrap; }
+    .ratio-btn { border:1px solid #e5e3ef; border-radius:9px; color:#878697; background:#fff; padding:8px 12px; font-size:12px; font-weight:680; min-width:57px; transition:.15s; }
+    .ratio-btn.selected { background:#f1eefb; border-color:#a99ad6; color:#6356a6; }
+    .collage-subcontrols { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .collage-slider { width:100%; margin:1px 0 0; }
+    .collage-color-row { display:flex; flex-wrap:wrap; gap:8px; }
+    .collage-color { border:1px solid #e8e6f0; display:inline-flex; align-items:center; gap:7px; background:white; border-radius:10px; padding:7px 9px; color:#888998; font-size:11px; font-weight:650; }
+    .collage-color.active { border-color:#9e92ce; color:#6256a2; background:#f8f6ff; }
+    .collage-swatch { display:inline-block; width:16px; height:16px; border:1px solid #d9d6df; border-radius:5px; flex:none; }
+    .swatch-white { background:#fff; } .swatch-soft { background:#f5f3ef; }
+    .swatch-black { background:#1a1b20; } .swatch-transparent { background:conic-gradient(#fff 25%,#dcdde3 0 50%,#fff 0 75%,#dcdde3 0) 0 0/9px 9px; }
+    .collage-select { width:100%; padding:9px 12px; border:1px solid #e4e3ed; border-radius:9px; font-size:12px; background:white; color:#6d6c79; }
+    .collage-preview-column { min-width:0; }
+    .collage-preview-head { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:12px; }
+    .collage-preview-head strong { font-size:12px; font-weight:700; }
+    .collage-preview-head span { color:#9a9aa8; font-size:11px; font-variant-numeric:tabular-nums; }
+    .collage-preview-shell { display:grid; align-items:center; justify-items:center; background:#f7f7fa; border:1px solid #ebeaf1; padding:22px; border-radius:16px; min-height:290px; overflow:hidden; }
+    .collage-checker { position:relative; display:inline-flex; width:fit-content; max-width:100%; background:conic-gradient(#f0f0f2 25%,#fff 0 50%,#f0f0f2 0 75%,#fff 0) 0 0/18px 18px; box-shadow:0 4px 20px #14152816; }
+    .collage-checker canvas { width:auto; height:auto; max-width:100%; max-height:470px; display:block; }
+    .collage-preview-help { text-align:center; color:#999aa6; font-size:11px; margin:11px 0 15px; }
+    .collage-save { display:block; width:100%; padding:13px 17px; font-size:12px; }
+    .collage-save:disabled { transform:none !important; }
+    @media(max-width:790px){ .collage-body { grid-template-columns:1fr; gap:25px; } .collage-preview-shell { min-height:230px; } }
+    @media(max-width:550px){ .collage-section { border-radius:16px; padding:19px 16px 20px; } .collage-body { gap:22px; margin-top:19px; } .collage-controls { gap:19px; } .collage-preview-shell { padding:13px; } .collage-checker canvas { max-height:430px; } .ratio-btn { min-width:54px; } }
     .footer { padding:0 0 36px; text-align:center; color:#adaeb9; font-size:11px; }
     .info-strip { display:flex; justify-content:center; gap:25px; flex-wrap:wrap; margin-top:19px; color:#a0a0ae; font-size:11px; }
     .info-strip span:before { content:"•"; margin-right:9px; color:#b5a9de; }
@@ -189,8 +228,9 @@
             </div>
             <div>
               <div class="setting-label"><label for="strength">보정 강도</label><span class="range-value" id="strengthLabel">75%</span></div>
-              <div class="range-line"><input class="strength" type="range" id="strength" min="0" max="100" step="5" value="75"></div>
-              <div class="setting-foot">강도를 높이면 사진 간 색감 차이를 더 적극적으로 줄입니다.</div>
+              <div class="range-line"><input class="strength" type="range" id="strength" min="0" max="250" step="5" value="75" aria-describedby="strengthHint"></div>
+              <div class="strength-scale" aria-hidden="true"><span>0%</span><span>100% · 기본</span><span>250% · 최대</span></div>
+              <div class="setting-foot" id="strengthHint">100%를 넘기면 사진 간 밝기·채도·색온도 차이를 더 강하게 줄입니다.</div>
             </div>
           </div>
         </div>
@@ -206,6 +246,42 @@
         </div>
         <div id="imageGrid" class="grid"><div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="m5 17 4.5-5 4.3 4.3 2.2-2.1 3 3"/><circle cx="8.5" cy="8.5" r="1.4"/></svg><span>사진을 추가하면 여기에 표시됩니다.</span></div></div>
         <div class="exportbar" id="exportBar"><div><strong>색감 통일이 완료되었습니다.</strong><span>각 사진의 원본 크기를 유지해 저장합니다. JPEG는 고품질 JPEG로, 투명도를 지원하는 PNG·WebP·AVIF는 PNG로 저장합니다.</span></div><button class="primary-btn download-btn" id="downloadAll" type="button">↓ 전체 ZIP 저장</button></div>
+        <section class="collage-section" id="collageSection" hidden aria-labelledby="collageHeading">
+          <div class="collage-heading">
+            <div class="collage-heading-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="2.5" width="9" height="9" rx="1.7"/><rect x="13.5" y="2.5" width="8" height="5.8" rx="1.5"/><rect x="13.5" y="10.3" width="8" height="11.2" rx="1.5"/><rect x="2.5" y="13.5" width="9" height="8" rx="1.7"/></svg></div>
+            <div><h2 id="collageHeading">보정한 사진을 콜라주로</h2><p>1~6장의 보정 결과를 한 장의 PNG 이미지로 저장할 수 있어요.</p></div>
+          </div>
+          <div class="collage-body">
+            <div class="collage-controls">
+              <div>
+                <div class="collage-control-label">캔버스 방향</div>
+                <div class="segmented collage-segmented" id="collageOrientation" role="group" aria-label="콜라주 방향"><button type="button" class="segment active" data-orientation="portrait" aria-pressed="true">세로</button><button type="button" class="segment" data-orientation="landscape" aria-pressed="false">가로</button></div>
+              </div>
+              <div><div class="collage-control-label">콜라주 비율</div><div class="collage-ratios" id="collageRatios" role="group" aria-label="콜라주 비율"></div></div>
+              <div class="collage-subcontrols">
+                <div><div class="collage-control-label">사진 배치</div><div class="segmented collage-segmented" id="collageLayouts" role="group" aria-label="사진 배치"><button type="button" class="segment active" data-layout="smart" aria-pressed="true">자동</button><button type="button" class="segment" data-layout="regular" aria-pressed="false">그리드</button></div></div>
+                <div><div class="collage-control-label">사진 맞춤</div><div class="segmented collage-segmented" id="collageFit" role="group" aria-label="사진 맞춤"><button type="button" class="segment active" data-fit="cover" aria-pressed="true">빈틈 없이</button><button type="button" class="segment" data-fit="contain" aria-pressed="false">전체 보기</button></div></div>
+              </div>
+              <div class="collage-subcontrols">
+                <div><label class="setting-label" for="collageGap">사진 간격 <span class="range-value" id="collageGapValue">24px</span></label><input type="range" class="collage-slider" id="collageGap" min="0" max="120" step="4" value="24"></div>
+                <div><label class="setting-label" for="collagePadding">바깥 여백 <span class="range-value" id="collagePaddingValue">64px</span></label><input type="range" class="collage-slider" id="collagePadding" min="0" max="240" step="8" value="64"></div>
+              </div>
+              <div><div class="collage-control-label">배경색</div><div class="collage-color-row" id="collageBackground" role="group" aria-label="콜라주 배경색">
+                <button type="button" class="collage-color active" data-bg="white" aria-pressed="true"><span class="collage-swatch swatch-white"></span>화이트</button>
+                <button type="button" class="collage-color" data-bg="soft" aria-pressed="false"><span class="collage-swatch swatch-soft"></span>아이보리</button>
+                <button type="button" class="collage-color" data-bg="black" aria-pressed="false"><span class="collage-swatch swatch-black"></span>블랙</button>
+                <button type="button" class="collage-color" data-bg="transparent" aria-pressed="false"><span class="collage-swatch swatch-transparent"></span>투명</button>
+              </div></div>
+              <div><label class="collage-control-label" for="collageResolution" style="display:block">저장 화질</label><select id="collageResolution" class="collage-select"><option value="2400">표준 · 긴 변 2400px</option><option value="3200" selected>고화질 · 긴 변 3200px</option><option value="4000">초고화질 · 긴 변 4000px</option></select></div>
+            </div>
+            <div class="collage-preview-column">
+              <div class="collage-preview-head"><strong>콜라주 미리보기</strong><span id="collageOutputSize">2400 × 3200px</span></div>
+              <div class="collage-preview-shell"><div class="collage-checker"><canvas id="collageCanvas" width="600" height="800" aria-label="콜라주 미리보기"></canvas></div></div>
+              <p class="collage-preview-help" id="collagePreviewHelp">업로드한 순서로 배치됩니다. PNG 저장 시 선택한 비율과 여백이 그대로 적용됩니다.</p>
+              <button type="button" class="primary-btn collage-save" id="saveCollage">↓ 콜라주 PNG 저장</button>
+            </div>
+          </div>
+        </section>
       </section>
     </main>
     <footer class="footer">tonal. · 브라우저 안에서만 처리되는 개인용 이미지 도구<br>서로 다른 장면의 완벽한 전문가급 일치는 보장하지 않으며, 원본을 보존한 채 결과를 확인할 수 있습니다.</footer>
@@ -216,6 +292,9 @@
   const MAX_FILES = 6;
   const $ = (id) => document.getElementById(id);
   const state = { photos: [], mode: 'auto', referenceId: null, strength: 75, view: 'compare', working: false, done: false, jobToken: 0, runner: null };
+  const collage = {orientation:'portrait', ratio:'3:4', layout:'smart', fit:'cover', gap:24, padding:64, background:'white', resolution:3200};
+  let collageRevision=0;
+  let collageSaving=false;
   const icons = {
     close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M6 6 18 18M18 6 6 18"/></svg>',
     download: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m-4-4 4 4 4-4M4 17v3h16v-3"/></svg>'
@@ -252,12 +331,15 @@
     $('resultCount').textContent = state.photos.length ? `${state.photos.length}장` : '';
     $('viewControl').classList.toggle('visible', state.photos.some(p => Boolean(p.resultUrl)));
     $('exportBar').classList.toggle('visible', state.done && state.photos.length > 0);
+    $('collageSection').hidden = !(state.done && state.photos.length > 0);
+    $('saveCollage').disabled = !(state.done && state.photos.length > 0) || collageSaving;
   }
   function invalidate() {
+    collageRevision++;
     state.done = false;
     for (const p of state.photos) {
       if (p.resultUrl) URL.revokeObjectURL(p.resultUrl);
-      p.resultUrl = null; p.blob = null; p.profile = null; p.compare = 50;
+      p.resultUrl = null; p.blob = null; p.profile = null; p.compare = 50; p.collageThumb = null;
     }
     resetProgress(); clearFlash();
   }
@@ -299,7 +381,7 @@
     if (!accepted.length) return;
     invalidate();
     for (const file of accepted) {
-      const item = { id:++idSequence, file, url:URL.createObjectURL(file), resultUrl:null, blob:null, profile:null, compare:50 };
+      const item = { id:++idSequence, file, url:URL.createObjectURL(file), resultUrl:null, blob:null, profile:null, compare:50, collageThumb:null };
       state.photos.push(item);
       if (state.referenceId === null) state.referenceId = item.id;
     }
@@ -399,14 +481,16 @@
         castB:neutralB/Math.max(.0001,neutralWeight), conf, neutralPercent:neutralWeight/n };
     } finally { src.close(); }
   }
-  function weightedAverage(profiles, index, field, refIdx) {
+  function weightedAverage(profiles, index, field, refIdx, boost=0) {
     const me=profiles[index];
     if(refIdx >= 0) return profiles[refIdx][field];
     let sum=0,weight=0;
     profiles.forEach((peer,j)=>{
       const sceneDelta=(peer.p50-me.p50)/.235;
       const sceneWeight=Math.exp(-.5*sceneDelta*sceneDelta);
-      const w=(j===index ? .65 : sceneWeight);
+      // At 0-100% keep scene-aware matching. Above 100%, converge
+      // toward a single group-wide target even across different scenes.
+      const w=j===index ? .65+.35*boost : sceneWeight+(1-sceneWeight)*(.86*boost);
       sum+=peer[field]*w; weight+=w;
     });
     return sum/Math.max(weight,.00001);
@@ -427,16 +511,20 @@
   function calculateSettings(profiles, index) {
     const me=profiles[index];
     const refIdx=state.mode === 'reference' ? Math.max(0,state.photos.findIndex(p=>p.id===state.referenceId)) : -1;
-    const intensity=state.strength/100;
+    const intensity=clamp(state.strength/100,0,1);
+    // 100-250% deliberately raises the *actual* correction limits, not
+    // just the slider maximum. 0-100% retains the original gentle behavior.
+    const boost=clamp((state.strength-100)/150,0,1);
     const groupN=profiles.length;
-    const toneMix = groupN>1 ? intensity*.74 : intensity*.40;
-    const target10=weightedAverage(profiles,index,'p10',refIdx);
-    const target50=weightedAverage(profiles,index,'p50',refIdx);
-    const target90=weightedAverage(profiles,index,'p90',refIdx);
-    let d10=clamp((target10-me.p10)*toneMix,-.047,.047);
-    let d50=clamp((target50-me.p50)*toneMix,-.070,.070);
-    let d90=clamp((target90-me.p90)*toneMix,-.047,.047);
-    if(groupN===1) { // Very gentle dynamic-range cleanup for a single photo.
+    const toneMix = groupN>1 ? .74*intensity+.26*boost : .40*intensity;
+    const target10=weightedAverage(profiles,index,'p10',refIdx,boost);
+    const target50=weightedAverage(profiles,index,'p50',refIdx,boost);
+    const target90=weightedAverage(profiles,index,'p90',refIdx,boost);
+    const limitEdge=.047+.153*boost, limitMiddle=.070+.190*boost;
+    let d10=clamp((target10-me.p10)*toneMix,-limitEdge,limitEdge);
+    let d50=clamp((target50-me.p50)*toneMix,-limitMiddle,limitMiddle);
+    let d90=clamp((target90-me.p90)*toneMix,-limitEdge,limitEdge);
+    if(groupN===1) { // Keep single-photo auto cleanup gentle, even at 250%.
       if(me.p90-me.p10<.42) { d10-=.005*intensity; d90+=.005*intensity; }
       if(me.p50>.88) d50=-.012*intensity;
       if(me.p50<.16 && me.p90>.45) d50=.012*intensity;
@@ -450,21 +538,26 @@
     y[1]=clamp(y[1],.001,.996);
     y[2]=clamp(y[2],y[1]+.001,.997);
     y[3]=clamp(y[3],y[2]+.001,.999);
-    const chromaTarget=weightedAverage(profiles,index,'chroma',refIdx);
-    const chromaRatio=me.chroma>.012 && chromaTarget>.012 ? Math.pow(chromaTarget/me.chroma,.34*intensity) : 1;
-    const satGain=clamp(chromaRatio,.88,1.12);
-    const targetCastA=weightedAverage(profiles,index,'castA',refIdx)*.86;
-    const targetCastB=weightedAverage(profiles,index,'castB',refIdx)*.86;
-    const castA=clamp((me.castA-targetCastA)*intensity*me.conf*.68,-.022,.022);
-    const castB=clamp((me.castB-targetCastB)*intensity*me.conf*.68,-.028,.028);
-    return { tone:tonemapSettings(x,y), satGain,castA,castB };
+    const chromaTarget=weightedAverage(profiles,index,'chroma',refIdx,boost);
+    const chromaRatio=me.chroma>.012 && chromaTarget>.012 ? Math.pow(chromaTarget/me.chroma,.34*intensity+.66*boost) : 1;
+    const satGain=clamp(chromaRatio,.88-.30*boost,1.12+.65*boost);
+    const castTargetRatio=.86+.14*boost;
+    const targetCastA=weightedAverage(profiles,index,'castA',refIdx,boost)*castTargetRatio;
+    const targetCastB=weightedAverage(profiles,index,'castB',refIdx,boost)*castTargetRatio;
+    const castConfidence=me.conf+(1-me.conf)*(.25*boost);
+    const castStrength=.68*intensity+.90*boost;
+    const castLimitA=.022+.046*boost,castLimitB=.028+.057*boost;
+    const castA=clamp((me.castA-targetCastA)*castStrength*castConfidence,-castLimitA,castLimitA);
+    const castB=clamp((me.castB-targetCastB)*castStrength*castConfidence,-castLimitB,castLimitB);
+    return { tone:tonemapSettings(x,y), satGain,castA,castB,
+      skinKeep:.42+.28*boost, skinSatScale:.48+.32*boost };
   }
 
   // This pure function is serialized into a local Blob Worker; no network call,
   // model download, or third-party package is necessary.
   function applyColorTransform(buffer, params, onProgress) {
     const data=new Uint8ClampedArray(buffer);
-    const {tone,satGain,castA,castB}=params;
+    const {tone,satGain,castA,castB,skinKeep,skinSatScale}=params;
     const toLin=new Float32Array(256);
     for(let n=0;n<256;n++){ let v=n/255;toLin[n]=v<=.04045?v/12.92:Math.pow((v+.055)/1.055,2.4); }
     const srgbTable=new Uint8ClampedArray(16385);
@@ -506,10 +599,10 @@
       const cr=128+.5*R-.418688*G-.081312*B;
       // Conservative YCbCr skin guard also protects warm highlights from large shifts.
       const skin=(R>G && G>B && R>80 && cb>=79 && cb<=132 && cr>=133 && cr<=175 && L>.29 && L<.92);
-      const skinKeep=skin?.42:1;
-      let nextA=A-castA*neutralFactor*skinKeep;
-      let nextB=BB-castB*neutralFactor*skinKeep;
-      const softSat=1+(satGain-1)*(.92-.35*clip(C/.28,0,1))*(skin?.48:1);
+      const skinCorrection=skin?skinKeep:1;
+      let nextA=A-castA*neutralFactor*skinCorrection;
+      let nextB=BB-castB*neutralFactor*skinCorrection;
+      const softSat=1+(satGain-1)*(.92-.35*clip(C/.28,0,1))*(skin?skinSatScale:1);
       nextA*=softSat; nextB*=softSat;
       nextL=clip(nextL,.00001,.99999);
       let channels=toRGB(nextL,nextA,nextB);
@@ -652,6 +745,7 @@
       progress(100, '모든 사진의 보정이 완료되었습니다.');
       flash('보정 결과를 확인해 주세요. 사진 아래 슬라이더로 원본과 비교할 수 있습니다.');
       drawCards();
+      refreshCollage();
       $('results').scrollIntoView({behavior:'smooth',block:'start'});
     }catch(err){
       if(token!==state.jobToken)return;
@@ -725,6 +819,246 @@
     finally {button.textContent=label;button.disabled=false;}
   }
 
+
+  // Collage output is rendered with corrected blobs, not the on-screen photo preview.
+  // The same tile geometry (in output pixels) is reused for the smaller preview.
+  const collageBackgrounds={white:'#ffffff',soft:'#f5f3ef',black:'#1a1b20',transparent:null};
+  const collageRatioOptions=['3:4','2:3','4:5','9:16','1:1'];
+  function actualRatio() {
+    const [a,b]=collage.ratio.split(':').map(Number);
+    return collage.orientation==='landscape' ? [b,a] : [a,b];
+  }
+  function collageDimensions() {
+    const [a,b]=actualRatio(),long=collage.resolution;
+    return a>b ? {width:long,height:Math.round(long*b/a)} : {width:Math.round(long*a/b),height:long};
+  }
+  function updateCollageRatios() {
+    const selected=collage.ratio;
+    $('collageRatios').innerHTML=collageRatioOptions.map(key=>{
+      const [a,b]=key.split(':'),ratio=collage.orientation==='landscape'?`${b}:${a}`:key;
+      return `<button type="button" class="ratio-btn ${key===selected?'selected':''}" data-ratio="${key}" aria-pressed="${key===selected}">${ratio}</button>`;
+    }).join('');
+  }
+  function updateCollageSize() {
+    const {width,height}=collageDimensions();
+    $('collageOutputSize').textContent=`${width.toLocaleString('ko-KR')} × ${height.toLocaleString('ko-KR')}px`;
+  }
+  function collageTileDimensions() {
+    return state.photos.map(p=>({width:p.profile.width,height:p.profile.height}));
+  }
+  function rowPartitions(n, maxPerRow=3, maxRows=4) {
+    const patterns=[];
+    function walk(rest,parts){
+      if(!rest){patterns.push(parts);return;}
+      if(parts.length===maxRows)return;
+      for(let v=1;v<=Math.min(maxPerRow,rest);v++)walk(rest-v,[...parts,v]);
+    }
+    walk(n,[]);return patterns;
+  }
+  function regularCollageRows(n,wide) {
+    if(n===1)return [1];
+    if(n===2)return wide?[2]:[1,1];
+    if(n===3)return wide?[2,1]:[1,2];
+    if(n===4)return [2,2];
+    if(n===5)return wide?[3,2]:[2,1,2];
+    return wide?[3,3]:[2,2,2];
+  }
+  function layoutForRows(pattern,images,W,H,gap,margin,smart) {
+    const contentWidth=W-margin*2,contentHeight=H-margin*2;
+    const rowCount=pattern.length;
+    const usableH=contentHeight-gap*(rowCount-1);
+    if(usableH<=0 || contentWidth<=0)return null;
+    const natural=[],ratios=images.map(img=>img.width/img.height);
+    let start=0;
+    for(const amount of pattern){
+      const usableW=contentWidth-gap*(amount-1);
+      if(usableW<=0)return null;
+      const weights=ratios.slice(start,start+amount).map(a=>smart?clamp(a,.48,2.05):1);
+      const sum=weights.reduce((a,b)=>a+b,0);
+      natural.push({amount,weights,sum,width:usableW,baseHeight:usableW/(smart?sum:amount)});
+      start+=amount;
+    }
+    const heightTotal=natural.reduce((t,row)=>t+row.baseHeight,0);
+    const tiles=[];
+    let y=margin,offset=0;
+    for(const row of natural){
+      const rowH=smart?row.baseHeight/heightTotal*usableH:usableH/rowCount;
+      let x=margin;
+      for(let col=0;col<row.amount;col++){
+        const width=row.width*row.weights[col]/row.sum;
+        tiles.push({x,y,w:width,h:rowH});
+        x+=width+gap;
+      }
+      y+=rowH+gap;offset+=row.amount;
+    }
+    let loss=0,small=0;
+    for(let i=0;i<tiles.length;i++){
+      const cell=tiles[i],targetAspect=cell.w/cell.h,sourceAspect=ratios[i];
+      loss+=1-Math.min(targetAspect/sourceAspect,sourceAspect/targetAspect);
+      const frac=cell.w*cell.h/(contentWidth*contentHeight);
+      small+=Math.max(0,.105-frac);
+    }
+    return {tiles,score:loss/images.length+small*.35+Math.abs(rowCount-(W>=H?2:3))*.009};
+  }
+  function calculateCollageLayout(images,W,H,settings) {
+    const margin=clamp(settings.padding,0,Math.min(W,H)*.22);
+    const gap=clamp(settings.gap,0,Math.min(W,H)*.12);
+    if(settings.layout==='regular')return layoutForRows(regularCollageRows(images.length,W>=H),images,W,H,gap,margin,false).tiles;
+    let best=null;
+    for(const pattern of rowPartitions(images.length)){
+      const layout=layoutForRows(pattern,images,W,H,gap,margin,true);
+      if(layout && (!best || layout.score<best.score))best=layout;
+    }
+    if(!best)throw new Error('콜라주 레이아웃을 계산할 수 없습니다.');
+    return best.tiles;
+  }
+  function paintCollageBackground(ctx,width,height) {
+    ctx.clearRect(0,0,width,height);
+    const color=collageBackgrounds[collage.background];
+    if(color){ctx.fillStyle=color;ctx.fillRect(0,0,width,height);}
+  }
+  function paintCollageTile(ctx,image,cell,scale) {
+    const x=Math.round(cell.x*scale),y=Math.round(cell.y*scale);
+    const endX=Math.round((cell.x+cell.w)*scale),endY=Math.round((cell.y+cell.h)*scale);
+    const w=Math.max(1,endX-x),h=Math.max(1,endY-y);
+    const iw=image.width||image.naturalWidth, ih=image.height||image.naturalHeight;
+    if(!iw||!ih)return;
+    if(collage.fit==='contain'){
+      const factor=Math.min(w/iw,h/ih),dw=iw*factor,dh=ih*factor;
+      ctx.drawImage(image,x+(w-dw)/2,y+(h-dh)/2,dw,dh);
+    }else{
+      const cropRatio=Math.min(iw/w,ih/h);
+      const sw=Math.min(iw,w*cropRatio),sh=Math.min(ih,h*cropRatio);
+      ctx.drawImage(image,(iw-sw)/2,(ih-sh)/2,sw,sh,x,y,w,h);
+    }
+  }
+  async function smallCollageImage(photo){
+    if(photo.collageThumb)return photo.collageThumb;
+    const currentBlob=photo.blob;
+    const decoded=await decode(currentBlob,photo.resultUrl);
+    try {
+      const scale=Math.min(1,1100/Math.max(decoded.width,decoded.height));
+      const w=Math.max(1,Math.round(decoded.width*scale)),h=Math.max(1,Math.round(decoded.height*scale));
+      const thumb=document.createElement('canvas');thumb.width=w;thumb.height=h;
+      const ctx=thumb.getContext('2d',{alpha:true,colorSpace:'srgb'});
+      if(!ctx)throw new Error('콜라주 미리보기를 만들 수 없습니다.');
+      ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+      ctx.drawImage(decoded.image,0,0,w,h);
+      if(state.done && photo.blob===currentBlob)photo.collageThumb=thumb;
+      return thumb;
+    } finally {decoded.close();}
+  }
+  async function refreshCollage() {
+    const revision=++collageRevision;
+    if(!state.done||!state.photos.length)return;
+    const photos=state.photos.slice();
+    updateCollageSize();
+    $('collagePreviewHelp').textContent='미리보기 생성 중…';
+    try {
+      const {width,height}=collageDimensions();
+      const maxPreview=1000,scale=Math.min(1,maxPreview/Math.max(width,height));
+      const preview=$('collageCanvas');
+      const px=Math.max(1,Math.round(width*scale)),py=Math.max(1,Math.round(height*scale));
+      const images=[];
+      for(const photo of photos){
+        if(revision!==collageRevision)return;
+        images.push(await smallCollageImage(photo));
+      }
+      if(revision!==collageRevision || !state.done)return;
+      const tiles=calculateCollageLayout(collageTileDimensions(),width,height,collage);
+      preview.width=px;preview.height=py;
+      const ctx=preview.getContext('2d',{alpha:true,colorSpace:'srgb'});
+      ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+      paintCollageBackground(ctx,px,py);
+      tiles.forEach((tile,i)=>paintCollageTile(ctx,images[i],tile,px/width));
+      $('collagePreviewHelp').textContent='업로드 순서로 배치 · 보정 완료본 사용 · 선택한 구성 그대로 PNG 저장';
+    }catch(err){
+      if(revision===collageRevision){
+        $('collagePreviewHelp').textContent='미리보기를 생성하지 못했습니다.';
+        flash(`콜라주 미리보기 오류: ${err.message}`,true);
+      }
+    }
+  }
+  async function downloadCollage(){
+    if(!state.done||state.working||collageSaving||!state.photos.length)return;
+    const token=state.jobToken;
+    const photos=state.photos.slice();
+    const button=$('saveCollage');
+    collageSaving=true;button.disabled=true;button.textContent='콜라주 저장 준비 중…';
+    let canvas=null;
+    try {
+      const {width,height}=collageDimensions();
+      const tiles=calculateCollageLayout(collageTileDimensions(),width,height,collage);
+      canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;
+      const ctx=canvas.getContext('2d',{alpha:true,colorSpace:'srgb'});
+      if(!ctx)throw new Error('콜라주 출력용 캔버스를 만들 수 없습니다.');
+      ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+      paintCollageBackground(ctx,width,height);
+      for(let i=0;i<photos.length;i++){
+        if(token!==state.jobToken||!state.done)throw new Error('사진이 변경되어 저장을 중단했습니다.');
+        button.textContent=`고화질 이미지 합성 중… ${i+1}/${photos.length}`;
+        const decoded=await decode(photos[i].blob,photos[i].resultUrl);
+        try{paintCollageTile(ctx,decoded.image,tiles[i],1);}
+        finally{decoded.close();}
+        await sleep();
+      }
+      if(token!==state.jobToken||!state.done)throw new Error('사진이 변경되어 저장을 중단했습니다.');
+      button.textContent='PNG 생성 중…';
+      const blob=await encodeCanvas(canvas,'image/png');
+      const [a,b]=actualRatio();
+      saveBlob(blob,`tonal_collage_${photos.length}장_${a}x${b}_${width}x${height}.png`);
+    }catch(err){flash(`콜라주 저장 중 오류: ${err.message}`,true);}
+    finally{
+      if(canvas){canvas.width=0;canvas.height=0;}
+      collageSaving=false;button.disabled=false;button.textContent='↓ 콜라주 PNG 저장';
+      updateControls();
+    }
+  }
+  function updateSegment(container,button){
+    container.querySelectorAll('button').forEach(el=>{
+      const active=el===button;el.classList.toggle('active',active);el.setAttribute('aria-pressed',String(active));
+    });
+  }
+  function bindCollageSegment(id,selector,field){
+    $(id).addEventListener('click',e=>{
+      const button=e.target.closest(selector);if(!button || !state.done || collageSaving)return;
+      const next=button.dataset[field];if(!next || collage[field]===next)return;
+      collage[field]=next;updateSegment($(id),button);
+      if(field==='orientation')updateCollageRatios();
+      refreshCollage();
+    });
+  }
+  bindCollageSegment('collageOrientation','button[data-orientation]','orientation');
+  bindCollageSegment('collageLayouts','button[data-layout]','layout');
+  bindCollageSegment('collageFit','button[data-fit]','fit');
+  $('collageRatios').addEventListener('click',e=>{
+    const button=e.target.closest('button[data-ratio]');
+    if(!button || !state.done || collageSaving)return;
+    collage.ratio=button.dataset.ratio;updateCollageRatios();refreshCollage();
+  });
+  for(const [name,label] of [['Gap','gap'],['Padding','padding']]){
+    $('collage'+name).addEventListener('input',e=>{
+      collage[label]=Number(e.target.value);
+      $('collage'+name+'Value').textContent=collage[label]+'px';
+      refreshCollage();
+    });
+  }
+  $('collageBackground').addEventListener('click',e=>{
+    const button=e.target.closest('button[data-bg]');if(!button||!state.done||collageSaving)return;
+    collage.background=button.dataset.bg;
+    $('collageBackground').querySelectorAll('button').forEach(el=>{
+      const active=el===button;el.classList.toggle('active',active);el.setAttribute('aria-pressed',String(active));
+    });
+    refreshCollage();
+  });
+  $('collageResolution').addEventListener('change',e=>{
+    collage.resolution=Number(e.target.value);
+    refreshCollage();
+  });
+  $('saveCollage').addEventListener('click',downloadCollage);
+  updateCollageRatios();
+  updateCollageSize();
+
   $('pickBtn').addEventListener('click',e=>{e.stopPropagation();$('fileInput').click();});
   $('dropzone').addEventListener('click',()=>{if(!state.working && state.photos.length<MAX_FILES)$('fileInput').click();});
   $('dropzone').addEventListener('keydown',e=>{if(e.target!==$('dropzone'))return;if(e.key==='Enter'||e.key===' '){e.preventDefault();$('dropzone').click();}});
@@ -747,7 +1081,15 @@
     $('modeDescription').textContent=mode==='auto' ? '모든 사진을 분석하여 자연스러운 공통 색감을 계산합니다.' : '사진 카드에서 기준 사진을 고르세요. 장면별 밝기는 무리하게 같게 만들지 않습니다.';
     invalidate();drawCards();
   });
-  $('strength').addEventListener('input',e=>{$('strengthLabel').textContent=e.target.value+'%';});
+  $('strength').addEventListener('input',e=>{
+    const value=Number(e.target.value);
+    $('strengthLabel').textContent=value+'%';
+    $('strengthHint').textContent=value<=100
+      ? '100%를 넘기면 사진 간 밝기·채도·색온도 차이를 더 강하게 줄입니다.'
+      : value<=175
+        ? '강한 통일: 서로 다른 사진의 색감을 더 적극적으로 맞춥니다.'
+        : '최대 통일: 원래 조명·분위기와 피부색까지 달라질 수 있습니다.';
+  });
   $('strength').addEventListener('change',e=>{state.strength=Number(e.target.value);invalidate();drawCards();});
   $('viewControl').addEventListener('click',e=>{
     const b=e.target.closest('button[data-view]');if(!b)return;
