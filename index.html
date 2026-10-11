@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light"><meta name="theme-color" content="#f7f7f7">
 <title>tonal. — 사진 색감 통일</title>
-<!-- build: 2026-10-11 slider-drag-reference-switch -->
+<!-- build: 2026-10-11 v4 collage-canvas-fit inline-strength -->
 <style>
 :root{color-scheme:light;--paper:#f7f7f7;--panel:#ffffff;--white:#ffffff;--ink:#171717;--sub:#666666;--line:#e5e5e5;--dark:#262626;--dark2:#2d2d2d;--darkline:#404040;--accent:#171717;--ease:cubic-bezier(.22,1,.36,1)}
 *{box-sizing:border-box}
@@ -213,6 +213,82 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
   body.sheet-open .panel-scroll>.setting-block:first-child{margin-top:0;padding-top:8px}
 }
 
+
+/* v4: preview canvas and its container share exact coordinates and dimensions. */
+.collage-checker{
+  display:block!important;position:relative;flex:none;overflow:hidden;
+  width:240px;height:320px;max-width:100%;max-height:100%;
+  box-shadow:0 14px 44px #0004;background:none!important;
+}
+.collage-checker canvas{
+  display:block!important;width:100%!important;height:100%!important;
+  min-width:0;max-width:none!important;max-height:none!important;
+  object-fit:fill!important;box-shadow:none!important;
+}
+.collage-preview-shell{min-width:0;min-height:0;overflow:hidden;}
+.inline-color-tools{display:none;}
+@media(max-width:720px){
+  /* The color controls are permanently visible directly below the photos. */
+  body:not(.in-collage) .mobile-bar{grid-template-columns:minmax(0,1fr);}
+  body:not(.in-collage) .mobile-tools-toggle{display:none!important;}
+  .studio-layout>.workspace{display:none!important;}
+  .studio-layout>.stage{min-height:0!important;overflow:hidden!important;display:flex!important;
+    flex-direction:column;height:calc(100dvh - 106px - var(--mobile-footer-height));padding-bottom:0!important;}
+  .inline-color-tools{display:block;flex:0 0 auto;padding:10px 19px 11px;
+    background:#fff;color:#171717;border-top:1px solid #dfdfdf;}
+  .inline-color-tools>.setting-block{border:0!important;padding:0!important;margin:0!important;}
+  .inline-color-tools .setting-label{margin-bottom:3px;font-size:12px;}
+  .inline-color-tools .strength-control{height:38px;}
+  .inline-color-tools .strength-scale{margin-top:0;}
+  .studio-layout>.stage .grid{display:grid!important;flex:1 1 auto;min-height:0;overflow:hidden!important;
+    gap:8px 9px;padding:3px 10px 9px;align-items:stretch;align-content:stretch;justify-items:center;}
+  .studio-layout>.stage .grid .photo-card{width:var(--frame-width,110px)!important;
+    height:100%!important;min-height:0;max-width:100%!important;
+    display:flex;flex-direction:column;justify-content:center;align-self:center;justify-self:center;overflow:hidden;}
+  .studio-layout>.stage .grid .photo-frame{aspect-ratio:3/4!important;
+    width:100%;height:var(--frame-height,148px)!important;min-height:0!important;
+    max-height:calc(100% - 22px);flex:0 0 auto!important;}
+  .studio-layout>.stage .grid .photo-meta{flex:0 0 auto!important;max-height:22px;padding-top:4px;min-height:0;}
+  .studio-layout>.stage .grid .photo-name{font-size:10px;}
+  .studio-layout>.stage .stage-footer{display:none!important;}
+  /* Classic two-line header stays in place while collage settings open. */
+  body.sheet-open .app-header{position:fixed!important;top:0;left:0;right:0;z-index:40;
+    height:106px!important;display:grid!important;grid-template-columns:1fr auto!important;
+    grid-template-rows:57px 49px!important;padding:0 18px!important;}
+  body.sheet-open .app-header .identity{display:flex!important;grid-column:1;grid-row:1;}
+  body.sheet-open .app-header .top-actions{display:flex!important;grid-column:2;grid-row:1;}
+  body.sheet-open .app-header .top-tabs{height:49px!important;grid-column:1/3;grid-row:2;
+    justify-content:flex-start;align-items:stretch;gap:31px;}
+  body.sheet-open .top-tab{height:49px!important;}
+  body.sheet-open{--mobile-preview-height:clamp(155px,22dvh,188px)!important;}
+  body.sheet-open .collage-preview-column{top:106px!important;height:var(--mobile-preview-height)!important;
+    min-height:0!important;padding:0!important;}
+  body.sheet-open .collage-preview-shell{width:100%;height:100%!important;max-height:100%;
+    padding:6px 12px!important;min-height:0!important;display:grid;place-items:center;}
+  body.sheet-open .collage-controls:not([hidden]){
+    top:calc(106px + var(--mobile-preview-height))!important;bottom:var(--mobile-footer-height)!important;
+    min-height:0;max-height:none;height:auto;}
+  body.sheet-open .collage-controls .panel-scroll{padding-top:0;}
+  body.sheet-open .collage-controls .panel-scroll>.setting-block:first-child{padding-top:12px;}
+  /* In normal collage mode, leave visual room for the fixed save button. */
+  .collage-preview-shell{overflow:hidden!important;}
+}
+
+
+/* Portrait contact sheet: collect the rows together, not spread across empty space. */
+@media(min-width:721px){
+  .stage .grid[data-count="1"] .photo-card,
+  .stage .grid[data-count="2"] .photo-card,
+  .stage .grid[data-count="3"] .photo-card{
+    height:min(100%,440px);max-height:440px;align-self:center;
+  }
+}
+@media(max-width:720px){
+  .studio-layout>.stage .grid{grid-template-rows:repeat(var(--photo-rows),max-content)!important;
+    align-content:center!important;align-items:center!important;justify-items:center!important;}
+  .studio-layout>.stage .grid .photo-card{height:auto!important;min-height:0!important;max-height:none!important;}
+}
+
 </style>
 </head>
 <body>
@@ -238,11 +314,11 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
   <div id="editorView" class="studio-layout" hidden>
     <aside class="workspace" aria-label="색감 보정">
       <div class="panel-head"><button type="button" data-close-sheet class="panel-close" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M6 6 18 18M18 6 6 18"/></svg></button></div>
-      <div class="panel-scroll">
+      <div class="panel-scroll" id="desktopColorControls">
         <section class="setting-block" id="referenceBlock">
           <div class="setting-label">기준 사진 <span id="referenceInfo" class="setting-current">01번</span></div>
         </section>
-        <section class="setting-block">
+        <section class="setting-block" id="strengthBlock">
           <label class="setting-label" for="strength"><span>보정 강도</span><span class="range-value" id="strengthLabel">130%</span></label>
           <div class="strength-control" id="strength" role="slider" tabindex="0" aria-label="보정 강도" aria-valuemin="0" aria-valuemax="250" aria-valuenow="130" aria-valuetext="130%" style="--strength-progress:52%">
             <span class="strength-track"><span class="strength-fill"></span><span class="strength-thumb"></span></span>
@@ -260,6 +336,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
         <div id="viewControl" class="preview-switch" role="group" aria-label="미리보기"><button class="active" type="button" data-view="after">보정</button><button type="button" data-view="before">원본</button></div>
       </div>
       <div id="imageGrid" class="grid" aria-live="polite"></div>
+      <div id="inlineColorTools" class="inline-color-tools" aria-label="보정 강도"></div>
       <div id="exportBar" class="stage-footer"><span class="stage-footer-text">PNG · JPG</span><button id="downloadAll" type="button" class="primary-btn">전체 ZIP 저장</button></div>
     </section>
   </div>
@@ -340,11 +417,18 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
   const imageSizes = new WeakMap();
   let idSequence = 0;
 
+  let noticeTimer=null;
   function flash(message, isError = false) {
+    clearTimeout(noticeTimer);
     const el = $('status'); el.textContent = message;
     el.classList.add('visible'); el.classList.toggle('error', isError);
+    noticeTimer=setTimeout(clearFlash,isError?6500:4500);
   }
-  function clearFlash() { $('status').classList.remove('visible', 'error'); }
+  function clearFlash() {
+    clearTimeout(noticeTimer);noticeTimer=null;
+    const el=$('status');el.classList.remove('visible','error');
+    el.replaceChildren();
+  }
   function progress(value, description) {
     value = clamp(value, 0, 100);
     $('progressBox').classList.add('visible');
@@ -353,12 +437,39 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     $('progressText').textContent = description;
   }
   function resetProgress() { $('progressBox').classList.remove('visible'); }
+  function positionStrengthControl(){
+    const strength=$('strengthBlock');
+    const parent=window.innerWidth<=720 ? $('inlineColorTools') : $('desktopColorControls');
+    if(strength.parentElement!==parent)parent.append(strength);
+  }
+  let photoFitFrame=0;
+  function queuePhotoFit(){
+    if(photoFitFrame)return;
+    photoFitFrame=requestAnimationFrame(()=>{photoFitFrame=0;fitPhotoGrid();});
+  }
+  function fitPhotoGrid(){
+    if(window.innerWidth>720 || activeScreen!=='color' || !state.photos.length)return;
+    const g=$('imageGrid'),r=g.getBoundingClientRect();
+    if(r.width<20 || r.height<20)return;
+    const css=getComputedStyle(g);
+    const cols=Math.max(1,Number(g.style.getPropertyValue('--photo-cols'))||1);
+    const rows=Math.max(1,Number(g.style.getPropertyValue('--photo-rows'))||1);
+    const horizontal=r.width-parseFloat(css.paddingLeft)-parseFloat(css.paddingRight)-(cols-1)*parseFloat(css.columnGap);
+    const vertical=r.height-parseFloat(css.paddingTop)-parseFloat(css.paddingBottom)-(rows-1)*parseFloat(css.rowGap);
+    const cellW=horizontal/cols,cellH=vertical/rows;
+    const frameHeight=Math.max(24,Math.floor(Math.min(cellH-26,cellW*4/3,280)));
+    const frameWidth=Math.max(18,Math.floor(frameHeight*3/4));
+    g.style.setProperty('--frame-height',frameHeight+'px');
+    g.style.setProperty('--frame-width',frameWidth+'px');
+  }
   function updateControls() {
     const total=state.photos.length;
     if(!total && activeScreen==='collage')activeScreen='color';
     document.body.classList.toggle('has-photos',total>0);
     document.body.classList.toggle('is-full',total>=MAX_FILES);
     document.body.classList.toggle('has-results',state.done);
+    document.body.classList.toggle('in-collage',activeScreen==='collage');
+    positionStrengthControl();
     $('welcome').hidden=total>0;
     $('editorView').hidden=!total || activeScreen!=='color';
     $('collageSection').hidden=!total || activeScreen!=='collage';
@@ -377,14 +488,15 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     $('strength').tabIndex=strengthDisabled?-1:0;
     $('resultCount').textContent=total ? `${total} / ${MAX_FILES}` : '';
     const mobileWidth=window.innerWidth<=720,mediumWidth=window.innerWidth<=925;
-    const columns=mobileWidth||mediumWidth ? (total<=2?Math.max(1,total):2)
+    const columns=mobileWidth ? (total<=3?Math.max(1,total):total===4?2:3)
+      : mediumWidth ? (total<=2?Math.max(1,total):2)
       : total<=3?Math.max(1,total):total===4?2:3;
     const rows=Math.max(1,Math.ceil(total/columns));
     $('imageGrid').dataset.count=String(total);
     $('imageGrid').style.setProperty('--photo-cols',String(columns));
     $('imageGrid').style.setProperty('--photo-rows',String(rows));
     $('imageGrid').style.setProperty('--photo-count',String(Math.max(1,total)));
-    document.body.style.setProperty('--contact-preview-height',total>=5?'98px':total>=3?'110px':'118px');
+    document.body.style.setProperty('--contact-preview-height',total>=5?'154px':total>=3?'162px':'175px');
     $('referenceBlock').hidden=total<=1;
     $('referenceInfo').textContent=`${String(Math.max(0,state.photos.findIndex(p=>p.id===state.referenceId))+1).padStart(2,'0')}번 사진`;
     $('viewControl').classList.toggle('visible',state.done && state.photos.some(p=>Boolean(p.resultUrl)));
@@ -397,6 +509,8 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     $('tabColor').setAttribute('aria-current',activeScreen==='color'?'page':'false');
     $('tabCollage').setAttribute('aria-current',activeScreen==='collage'?'page':'false');
     syncToolsToggle();
+    $('mobileToolsToggle').hidden=activeScreen!=='collage';
+    queuePhotoFit();
     $('mobilePrimary').textContent=activeScreen==='collage'?UI.collageSave:state.working?UI.cancel:state.done?'전체 ZIP 저장':UI.process;
     $('mobilePrimary').disabled=zipSaving || (activeScreen==='collage'?(!total || state.working || collageSaving):(!total || collageSaving));
   }
@@ -1082,9 +1196,41 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
       return `<button type="button" class="ratio-btn ${key===selected?'selected':''}" data-ratio="${key}" aria-pressed="${key===selected}"><span class="ratio-icon" aria-hidden="true" style="--aspect:${w/h}"></span><span>${ratio}</span></button>`;
     }).join('');
   }
+  let collageFitFrame=0;
+  function queueCollageFit(){
+    if(collageFitFrame)return;
+    collageFitFrame=requestAnimationFrame(()=>{collageFitFrame=0;fitCollagePreview();});
+  }
+  function fitCollagePreview(){
+    if(activeScreen!=='collage' || !state.photos.length)return;
+    const shell=document.querySelector('.collage-preview-shell');
+    const checker=document.querySelector('.collage-checker');
+    const canvas=$('collageCanvas');
+    if(!shell || !checker || !canvas.width || !canvas.height)return;
+    const box=shell.getBoundingClientRect();
+    if(box.width<12 || box.height<12)return;
+    const css=getComputedStyle(shell);
+    const maxW=Math.max(1,box.width-parseFloat(css.paddingLeft)-parseFloat(css.paddingRight));
+    const maxH=Math.max(1,box.height-parseFloat(css.paddingTop)-parseFloat(css.paddingBottom));
+    const ratio=canvas.width/canvas.height;
+    const width=Math.max(1,Math.min(maxW,maxH*ratio));
+    const height=width/ratio;
+    checker.style.width=width+'px';checker.style.height=height+'px';
+    checker.style.aspectRatio=String(ratio);
+    // Never allow an intrinsic-size flex child to leave a checkerboard strip on the right.
+    canvas.style.width='100%';canvas.style.height='100%';
+  }
+  function syncCollagePreviewBackground(){
+    const c=$('collageCanvas');
+    const color=collageBackgrounds[collage.background];
+    // Checkerboard is solely a preview for *explicitly* transparent canvas pixels.
+    c.style.background=color || 'conic-gradient(#b8b8b8 25%,#dadada 0 50%,#b8b8b8 0 75%,#dadada 0) 0 0/14px 14px';
+  }
   function updateCollageSize() {
     const {width,height}=collageDimensions();
     $('collageOutputSize').textContent=`${width.toLocaleString('ko-KR')} × ${height.toLocaleString('ko-KR')}px`;
+    syncCollagePreviewBackground();
+    queueCollageFit();
   }
   function collageTileDimensions(photos) {
     return photos.map(p=>{
@@ -1231,6 +1377,8 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
       if(revision!==collageRevision || state.working || activeScreen!=='collage')return;
       const tiles=calculateCollageLayout(collageTileDimensions(photos),width,height,collage);
       preview.width=px;preview.height=py;
+      syncCollagePreviewBackground();
+      queueCollageFit();
       const ctx=preview.getContext('2d',{alpha:true,colorSpace:'srgb'});
       if(!ctx)throw new Error('콜라주 미리보기를 만들 수 없습니다.');
       ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
@@ -1564,19 +1712,25 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     $('mobileToolsToggle').setAttribute('aria-controls',activeScreen==='collage'?'collageSection':'editorView');
     $('mobileToolsLabel').textContent=open?'설정 닫기':activeScreen==='collage'?UI.collageSettings:UI.editSettings;
   }
-  function closeTools(){document.body.classList.remove('sheet-open');syncToolsToggle();}
+  function closeTools(){document.body.classList.remove('sheet-open');syncToolsToggle();queueCollageFit();}
   function openTools(){
-    if(!state.photos.length)return;
+    if(!state.photos.length || activeScreen!=='collage')return;
     if(document.body.classList.contains('sheet-open')){closeTools();return;}
     window.scrollTo({top:0,behavior:'instant'});
     document.body.classList.add('sheet-open');
     syncToolsToggle();
+    queueCollageFit();
   }
   $('sheetScrim').addEventListener('click',closeTools);
   document.querySelectorAll('[data-close-sheet]').forEach(b=>b.addEventListener('click',closeTools));
   $('mobileToolsToggle').addEventListener('click',openTools);
   window.matchMedia('(max-width: 720px)').addEventListener('change',e=>{if(!e.matches)closeTools();updateControls();});
-  window.addEventListener('resize',()=>{if(state.photos.length)updateControls();});
+  window.addEventListener('resize',()=>{if(state.photos.length)updateControls();queueCollageFit();});
+  if(typeof ResizeObserver!=='undefined'){
+    const observer=new ResizeObserver(()=>{queuePhotoFit();queueCollageFit();});
+    observer.observe($('imageGrid'));
+    observer.observe(document.querySelector('.collage-preview-shell'));
+  }
   $('mobilePrimary').addEventListener('click',()=>{
     closeTools();
     if(activeScreen==='collage')downloadCollage();
@@ -1586,7 +1740,8 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
   function switchScreen(next){
     if(next==='collage' && (!state.photos.length || state.working))return;
     activeScreen=next; closeTools(); updateControls();
-    if(next==='collage'){renderCollageOrder();refreshCollage();}
+    if(next==='collage'){renderCollageOrder();refreshCollage();queueCollageFit();}
+    else queuePhotoFit();
   }
   $('tabColor').addEventListener('click',()=>switchScreen('color'));
   $('tabCollage').addEventListener('click',()=>switchScreen('collage'));
