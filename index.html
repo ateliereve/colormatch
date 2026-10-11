@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light"><meta name="theme-color" content="#f7f7f7">
 <title>tonal. — 사진 색감 통일</title>
-<!-- build: 2026-10-11 v8 two-column-landscape-preview -->
+<!-- build: 2026-10-11 v12 collapsible-mobile-color-settings -->
 <style>
 :root{color-scheme:light;--paper:#f7f7f7;--panel:#ffffff;--white:#ffffff;--ink:#171717;--sub:#666666;--line:#e5e5e5;--dark:#262626;--dark2:#2d2d2d;--darkline:#404040;--accent:#171717;--ease:cubic-bezier(.22,1,.36,1)}
 *{box-sizing:border-box}
@@ -418,6 +418,31 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
 .photo-frame .remove-photo.is-confirming{opacity:1!important;background:#f5f5f5!important;color:#171717!important;outline:2px solid #171717;outline-offset:-2px;}
 .photo-frame .remove-photo.is-confirming:after{content:"한번 더";position:absolute;right:0;top:100%;padding:2px 4px;background:#f5f5f5;color:#171717;font-size:9px;line-height:1.2;white-space:nowrap;border-radius:0 0 2px 2px;pointer-events:none;}
 
+
+/* v12 — restore a compact settings button beside the mobile color action.
+   The strength slider takes up no space until the button is explicitly opened. */
+.color-toolbar-settings{display:none;border:1px solid #585858;background:transparent;
+  border-radius:3px;color:#dddddd;font-size:10px;font-weight:550;
+  line-height:1.2;white-space:nowrap;padding:4px 8px;flex:0 0 auto}
+.color-toolbar-settings[aria-expanded="true"]{background:#414141;border-color:#858585;color:#fff}
+@media(max-width:720px){
+  body:not(.in-collage):not(.has-results) .mobile-bar{
+    grid-template-columns:minmax(0,1fr) minmax(0,1.3fr)!important;
+  }
+  body:not(.in-collage):not(.has-results) .mobile-bar .mobile-tools-toggle:not([hidden]){
+    display:flex!important;
+  }
+  /* After color matching, keep the requested two equal-sized action buttons;
+     a compact settings toggle moves into the preview toolbar. */
+  body.has-results:not(.in-collage) .mobile-bar{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+  .color-toolbar-settings:not([hidden]){display:inline-flex;align-items:center;justify-content:center}
+  .stage-title{align-items:center;min-width:0;gap:6px}
+  .inline-color-tools[hidden]{display:none!important}
+  .inline-color-tools:not([hidden]){display:block!important;flex:0 0 auto}
+}
+
 </style>
 </head>
 <body>
@@ -467,11 +492,11 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     </aside>
     <section class="stage" id="results" aria-label="미리보기">
       <div class="stage-toolbar">
-        <div class="stage-title"><h2>사진</h2><span class="stage-count" id="resultCount"></span></div>
+        <div class="stage-title"><h2>사진</h2><span class="stage-count" id="resultCount"></span><button type="button" id="colorHeaderSettingsToggle" class="color-toolbar-settings" aria-controls="inlineColorTools" aria-expanded="false" hidden>설정 열기</button></div>
         <div id="viewControl" class="preview-switch" role="group" aria-label="미리보기"><button class="active" type="button" data-view="after">보정</button><button type="button" data-view="before">원본</button></div>
       </div>
       <div id="imageGrid" class="grid" aria-live="polite"></div>
-      <div id="inlineColorTools" class="inline-color-tools" aria-label="보정 강도"></div>
+      <div id="inlineColorTools" class="inline-color-tools" aria-label="보정 강도" hidden></div>
 
     </section>
   </div>
@@ -534,6 +559,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
   const $ = (id) => document.getElementById(id);
   const state = { photos: [], mode: 'reference', referenceId: null, strength: 130, view: 'after', working: false, done: false, jobToken: 0, runner: null };
   let activeScreen='color';
+  let colorSettingsOpen=false;
   const UI = {"process":"\uc0c9\uac10 \ud1b5\uc77c","clear":"\ubaa8\ub450 \uc9c0\uc6b0\uae30","cancel":"\ucde8\uc18c","photoAdd":"\uc0ac\uc9c4 \uc120\ud0dd","editSettings":"\ubcf4\uc815 \uc124\uc815","collageSettings":"\ucf5c\ub77c\uc8fc \uc124\uc815","collageSave":"\u2193 \ucf5c\ub77c\uc8fc PNG \uc800\uc7a5","ref":"\uae30\uc900 \uc0ac\uc9c4","save":"\uc800\uc7a5"};
   const DEFAULT_COLLAGE = Object.freeze({orientation:'portrait',ratio:'3:4',layout:'regular',fit:'cover',gap:0,padding:0,background:'white',resolution:3200});
   const collage={...DEFAULT_COLLAGE};
@@ -778,6 +804,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     document.body.classList.toggle('has-results',state.done);
     document.body.classList.toggle('in-collage',activeScreen==='collage');
     positionStrengthControl();
+    syncColorSettings();
     $('welcome').hidden=total>0;
     $('editorView').hidden=!total || activeScreen!=='color';
     $('collageSection').hidden=!total || activeScreen!=='collage';
@@ -823,7 +850,8 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     $('tabColor').setAttribute('aria-current',activeScreen==='color'?'page':'false');
     $('tabCollage').setAttribute('aria-current',activeScreen==='collage'?'page':'false');
     syncToolsToggle();
-    $('mobileToolsToggle').hidden=activeScreen!=='collage';
+    $('mobileToolsToggle').hidden=activeScreen==='color' && state.done;
+    $('colorHeaderSettingsToggle').hidden=activeScreen!=='color' || !state.done || window.innerWidth>720;
     queuePhotoFit();
     $('mobilePrimary').textContent=activeScreen==='collage'?UI.collageSave:state.working?UI.cancel:state.done?'다시 보정':UI.process;
     $('mobilePrimary').disabled=zipSaving || (activeScreen==='collage'?(!total || state.working || collageSaving):(!total || collageSaving));
@@ -1336,7 +1364,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
       resetProgress();
       drawCards();
       refreshCollage();
-      if(window.innerWidth<=720)closeTools();
+      // Preserve the open color-strength panel after processing: no preview resize.
     }catch(err){
       if(token!==state.jobToken)return;
       invalidate();
@@ -2079,15 +2107,40 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
   });
   $('dialogClose').addEventListener('click',()=>$('photoDialog').close());
   $('photoDialog').addEventListener('click',e=>{if(e.target===$('photoDialog'))$('photoDialog').close();});
-  function syncToolsToggle(){
-    const open=document.body.classList.contains('sheet-open');
-    $('mobileToolsToggle').setAttribute('aria-expanded',String(open));
-    $('mobileToolsToggle').setAttribute('aria-controls',activeScreen==='collage'?'collageSection':'editorView');
-    $('mobileToolsLabel').textContent=open?'설정 닫기':activeScreen==='collage'?UI.collageSettings:UI.editSettings;
+  function syncColorSettings(){
+    const visible=colorSettingsOpen && activeScreen==='color' && window.innerWidth<=720 && state.photos.length>0;
+    $('inlineColorTools').hidden=!visible;
+    document.body.classList.toggle('color-settings-open',visible);
+    $('colorHeaderSettingsToggle').setAttribute('aria-expanded',String(visible));
+    $('colorHeaderSettingsToggle').textContent=visible?'설정 닫기':'설정 열기';
   }
-  function closeTools(){document.body.classList.remove('sheet-open');syncToolsToggle();queueCollageFit();}
+  function setColorSettingsOpen(open){
+    colorSettingsOpen=Boolean(open);
+    syncColorSettings();
+    syncToolsToggle();
+    queuePhotoFit();
+  }
+  function syncToolsToggle(){
+    const open=activeScreen==='collage'?document.body.classList.contains('sheet-open'):colorSettingsOpen;
+    $('mobileToolsToggle').setAttribute('aria-expanded',String(open));
+    $('mobileToolsToggle').setAttribute('aria-controls',activeScreen==='collage'?'collageSection':'inlineColorTools');
+    $('mobileToolsLabel').textContent=activeScreen==='collage'
+      ?(open?'설정 닫기':UI.collageSettings)
+      :(open?'설정 닫기':'설정 열기');
+  }
+  function closeTools(){
+    document.body.classList.remove('sheet-open');
+    colorSettingsOpen=false;
+    syncColorSettings();
+    syncToolsToggle();
+    queuePhotoFit();queueCollageFit();
+  }
   function openTools(){
-    if(!state.photos.length || activeScreen!=='collage')return;
+    if(!state.photos.length)return;
+    if(activeScreen==='color'){
+      setColorSettingsOpen(!colorSettingsOpen);
+      return;
+    }
     if(document.body.classList.contains('sheet-open')){closeTools();return;}
     window.scrollTo({top:0,behavior:'instant'});
     document.body.classList.add('sheet-open');
@@ -2097,6 +2150,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
   $('sheetScrim').addEventListener('click',closeTools);
   document.querySelectorAll('[data-close-sheet]').forEach(b=>b.addEventListener('click',closeTools));
   $('mobileToolsToggle').addEventListener('click',openTools);
+  $('colorHeaderSettingsToggle').addEventListener('click',()=>setColorSettingsOpen(!colorSettingsOpen));
   window.matchMedia('(max-width: 720px)').addEventListener('change',e=>{if(!e.matches)closeTools();updateControls();});
   window.addEventListener('resize',()=>{if(state.photos.length)updateControls();queueCollageFit();});
   if(typeof ResizeObserver!=='undefined'){
@@ -2105,9 +2159,8 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     observer.observe(document.querySelector('.collage-preview-shell'));
   }
   $('mobilePrimary').addEventListener('click',()=>{
-    closeTools();
-    if(activeScreen==='collage')downloadCollage();
-    else runCorrection();
+    if(activeScreen==='collage'){closeTools();downloadCollage();}
+    else runCorrection();  // Keep the color slider's open state and photo geometry unchanged.
   });
   $('mobileZip').addEventListener('click',()=>{if(state.done)downloadAll();});
   function switchScreen(next){
