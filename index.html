@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light"><meta name="theme-color" content="#f7f7f7">
 <title>tonal. — 사진 색감 통일</title>
-<!-- build: 2026-10-11 v12 collapsible-mobile-color-settings -->
+<!-- build: 2026-10-11 seamless-collage-feather-v14 -->
 <style>
 :root{color-scheme:light;--paper:#f7f7f7;--panel:#ffffff;--white:#ffffff;--ink:#171717;--sub:#666666;--line:#e5e5e5;--dark:#262626;--dark2:#2d2d2d;--darkline:#404040;--accent:#171717;--ease:cubic-bezier(.22,1,.36,1)}
 *{box-sizing:border-box}
@@ -481,6 +481,12 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     padding-top:3px!important;
   }
 }
+/* v14 - optional feathered seamless collage, without changing other modes. */
+#collageLayouts {gap:2px}
+#collageLayouts .segment {min-width:0;padding-inline:3px}
+.collage-seamless-note {font-size:10px;line-height:1.55;color:#8c8c8c;margin:8px 0 0}
+#collageSeamlessControls .collage-control-label {margin-bottom:10px}
+#collageSeamlessControls input[type="range"] {display:block;width:100%;accent-color:#262626}
 </style>
 </head>
 <body>
@@ -549,14 +555,19 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
           <div id="collageOrderList" class="collage-order-list" aria-label="콜라주 사진 순서"></div>
         </section>
         <section class="setting-block collage-subcontrols">
-          <div><div class="collage-control-label">사진 배치</div><div class="collage-segmented" id="collageLayouts" role="group" aria-label="사진 배치"><button class="segment active" type="button" data-layout="regular" aria-pressed="true">그리드</button><button class="segment" type="button" data-layout="smart" aria-pressed="false">자동</button></div></div>
-          <div><div class="collage-control-label">사진 맞춤</div><div class="collage-segmented" id="collageFit" role="group" aria-label="사진 맞춤"><button class="segment active" type="button" data-fit="cover" aria-pressed="true">빈틈 없이</button><button class="segment" type="button" data-fit="contain" aria-pressed="false">전체 보기</button></div></div>
+          <div><div class="collage-control-label">사진 배치</div><div class="collage-segmented" id="collageLayouts" role="group" aria-label="사진 배치"><button class="segment active" type="button" data-layout="regular" aria-pressed="true">그리드</button><button class="segment" type="button" data-layout="smart" aria-pressed="false">자동</button><button class="segment" type="button" data-layout="seamless" aria-pressed="false">심리스</button></div></div>
+          <div id="collageSeamlessControls" hidden>
+            <label class="collage-control-label" for="collageFeather"><span>경계 블러</span><span id="collageFeatherValue" class="range-value">170</span></label>
+            <input id="collageFeather" class="collage-slider" type="range" min="0" max="260" step="5" value="170" aria-label="심리스 경계 블러 강도">
+            <p class="collage-seamless-note">사진 2장 이상일 때 경계를 부드럽게 겹쳐 연결합니다. 사진 간격·여백·배경색은 심리스에서 적용되지 않습니다.</p>
+          </div>
+          <div id="collageFitControl"><div class="collage-control-label">사진 맞춤</div><div class="collage-segmented" id="collageFit" role="group" aria-label="사진 맞춤"><button class="segment active" type="button" data-fit="cover" aria-pressed="true">빈틈 없이</button><button class="segment" type="button" data-fit="contain" aria-pressed="false">전체 보기</button></div></div>
         </section>
-        <section class="setting-block collage-subcontrols">
+        <section class="setting-block collage-subcontrols" id="collageSpacingControls">
           <div><label class="setting-label" for="collageGap"><span>사진 간격</span><span id="collageGapValue" class="range-value">0px</span></label><input class="collage-slider" type="range" id="collageGap" min="0" max="120" step="4" value="0"></div>
           <div><label class="setting-label" for="collagePadding"><span>바깥 여백</span><span id="collagePaddingValue" class="range-value">0px</span></label><input class="collage-slider" type="range" id="collagePadding" min="0" max="240" step="8" value="0"></div>
         </section>
-        <section class="setting-block"><div class="collage-control-label">배경색</div><div class="collage-color-row" id="collageBackground" role="group" aria-label="배경색">
+        <section class="setting-block" id="collageBackgroundControl"><div class="collage-control-label">배경색</div><div class="collage-color-row" id="collageBackground" role="group" aria-label="배경색">
           <button type="button" class="collage-color active" data-bg="white" aria-pressed="true"><span class="collage-swatch swatch-white"></span>화이트</button>
           <button type="button" class="collage-color" data-bg="soft" aria-pressed="false"><span class="collage-swatch swatch-soft"></span>아이보리</button>
           <button type="button" class="collage-color" data-bg="black" aria-pressed="false"><span class="collage-swatch swatch-black"></span>블랙</button>
@@ -599,7 +610,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
   let activeScreen='color';
   let colorSettingsOpen=false;
   const UI = {"process":"\uc0c9\uac10 \ud1b5\uc77c","clear":"\ubaa8\ub450 \uc9c0\uc6b0\uae30","cancel":"\ucde8\uc18c","photoAdd":"\uc0ac\uc9c4 \uc120\ud0dd","editSettings":"\ubcf4\uc815 \uc124\uc815","collageSettings":"\ucf5c\ub77c\uc8fc \uc124\uc815","collageSave":"\u2193 \ucf5c\ub77c\uc8fc PNG \uc800\uc7a5","ref":"\uae30\uc900 \uc0ac\uc9c4","save":"\uc800\uc7a5"};
-  const DEFAULT_COLLAGE = Object.freeze({orientation:'portrait',ratio:'3:4',layout:'regular',fit:'cover',gap:0,padding:0,background:'white',resolution:3200});
+  const DEFAULT_COLLAGE = Object.freeze({orientation:'portrait',ratio:'3:4',layout:'regular',fit:'cover',gap:0,padding:0,feather:170,background:'white',resolution:3200});
   const collage={...DEFAULT_COLLAGE};
   let collageOrderIds=[];
   let pendingRemovalId=null;
@@ -777,7 +788,17 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
       $('collage'+suffix+'Value').textContent=collage[key]+'px';
     }
     $('collageResolution').value=String(collage.resolution);
+    $('collageFeather').value=String(collage.feather);
+    $('collageFeatherValue').textContent=String(collage.feather);
+    updateSeamlessControls();
     updateCollageRatios();updateCollageSize();
+  }
+  function updateSeamlessControls(){
+    const enabled=collage.layout==='seamless';
+    $('collageSeamlessControls').hidden=!enabled;
+    $('collageFitControl').hidden=enabled;
+    $('collageSpacingControls').hidden=enabled;
+    $('collageBackgroundControl').hidden=enabled;
   }
   function resetCollageSettings(){
     if(state.working||collageSaving||zipSaving)return;
@@ -1720,7 +1741,9 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
   function calculateCollageLayout(images,W,H,settings) {
     const margin=clamp(settings.padding,0,Math.min(W,H)*.22);
     const gap=clamp(settings.gap,0,Math.min(W,H)*.12);
-    if(settings.layout==='regular')return layoutForRows(regularCollageRows(images.length,W>=H),images,W,H,gap,margin,false).tiles;
+    if(settings.layout==='regular' || settings.layout==='seamless')return layoutForRows(
+      regularCollageRows(images.length,W>=H),images,W,H,
+      settings.layout==='seamless'?0:gap,settings.layout==='seamless'?0:margin,false).tiles;
     let best=null;
     for(const pattern of rowPartitions(images.length)){
       const layout=layoutForRows(pattern,images,W,H,gap,margin,true);
@@ -1754,6 +1777,68 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
       const cropRatio=Math.min(iw/w,ih/h);
       const sw=Math.min(iw,w*cropRatio),sh=Math.min(ih,h*cropRatio);
       ctx.drawImage(image,(iw-sw)/2,(ih-sh)/2,sw,sh,x,y,w,h);
+    }
+  }
+  // Seamless compositing: crossfade overlapping source photos (not a blanket blur).
+  // The first photo fills the canvas so every pixel always has an image underneath.
+  // Each later tile fades in across the *previous* tile's right / bottom extension.
+  // A single renderer serves both the low-res preview and the saved full-res PNG.
+  function drawSeamlessCover(ctx,image,x,y,w,h){
+    const iw=image.width||image.naturalWidth,ih=image.height||image.naturalHeight;
+    if(!iw||!ih||w<=0||h<=0)return;
+    const crop=Math.min(iw/w,ih/h);
+    const sw=Math.min(iw,w*crop),sh=Math.min(ih,h*crop);
+    ctx.drawImage(image,(iw-sw)/2,(ih-sh)/2,sw,sh,x,y,w,h);
+  }
+  function applySeamlessFade(ctx,w,h,start,end,horizontal){
+    const g=horizontal?ctx.createLinearGradient(start,0,end,0):ctx.createLinearGradient(0,start,0,end);
+    // Smooth, progressive opacity avoids a bright stripe or a visually hard join.
+    for(const [p,alpha] of [[0,0],[.16,.055],[.34,.27],[.5,.5],[.66,.73],[.84,.945],[1,1]]){
+      g.addColorStop(p,`rgba(0,0,0,${alpha})`);
+    }
+    ctx.globalCompositeOperation='destination-in';
+    ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
+    ctx.globalCompositeOperation='source-over';
+  }
+  function paintSeamlessTile(ctx,image,cell,scaleX,scaleY){
+    const canvasW=ctx.canvas.width,canvasH=ctx.canvas.height;
+    const leftEdge=Math.floor(cell.x*scaleX),topEdge=Math.floor(cell.y*scaleY);
+    const rightEdge=Math.min(canvasW,Math.ceil((cell.x+cell.w)*scaleX));
+    const bottomEdge=Math.min(canvasH,Math.ceil((cell.y+cell.h)*scaleY));
+    const cellW=Math.max(1,rightEdge-leftEdge),cellH=Math.max(1,bottomEdge-topEdge);
+    // The same reference-relative feather works at 1000px previews and 4000px saves.
+    const radius=Math.max(0,Math.min(Math.round(collage.feather*canvasW/2048),
+      Math.floor(Math.min(cellW,cellH)*.34)));
+    if(radius===0){
+      drawSeamlessCover(ctx,image,leftEdge,topEdge,cellW,cellH);
+      return;
+    }
+    const left=Math.max(0,leftEdge-radius),top=Math.max(0,topEdge-radius);
+    const right=Math.min(canvasW,rightEdge+radius),bottom=Math.min(canvasH,bottomEdge+radius);
+    const tw=Math.max(1,right-left),th=Math.max(1,bottom-top);
+    let layer=null;
+    try{
+      layer=document.createElement('canvas');layer.width=tw;layer.height=th;
+      const tc=layer.getContext('2d',{alpha:true});
+      if(!tc)throw new Error('심리스 합성 레이어를 만들 수 없습니다.');
+      tc.imageSmoothingEnabled=true;tc.imageSmoothingQuality='high';
+      drawSeamlessCover(tc,image,0,0,tw,th);
+      if(leftEdge>0)applySeamlessFade(tc,tw,th,
+        Math.max(0,leftEdge-radius-left),Math.min(tw,leftEdge+radius-left),true);
+      if(topEdge>0)applySeamlessFade(tc,tw,th,
+        Math.max(0,topEdge-radius-top),Math.min(th,topEdge+radius-top),false);
+      ctx.drawImage(layer,left,top);
+    }finally{
+      if(layer){layer.width=0;layer.height=0;}
+    }
+  }
+  function paintCollageImage(ctx,image,cell,index,fullW,fullH){
+    const scaleX=ctx.canvas.width/fullW,scaleY=ctx.canvas.height/fullH;
+    if(collage.layout==='seamless'){
+      if(index===0)drawSeamlessCover(ctx,image,0,0,ctx.canvas.width,ctx.canvas.height);
+      paintSeamlessTile(ctx,image,cell,scaleX,scaleY);
+    }else{
+      paintCollageTile(ctx,image,cell,scaleX,scaleY);
     }
   }
   // Store thumbnail and original dimensions for whichever version is shown.
@@ -1805,7 +1890,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
       if(!ctx)throw new Error('콜라주 미리보기를 만들 수 없습니다.');
       ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
       paintCollageBackground(ctx,px,py);
-      tiles.forEach((tile,i)=>paintCollageTile(ctx,images[i],tile,px/width,py/height));
+      tiles.forEach((tile,i)=>paintCollageImage(ctx,images[i],tile,i,width,height));
       $('collagePreviewHelp').textContent='';
       $('collagePreviewHelp').hidden=true;
     }catch(err){
@@ -1827,9 +1912,14 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
   }
   async function collagePhotoForCell(photo,source,sourceUrl,cell){
     const dims=photo.collageSize;
-    const desiredScale=collage.fit==='contain'?
-      Math.min(cell.w/dims.width,cell.h/dims.height):
-      Math.max(cell.w/dims.width,cell.h/dims.height);
+    const seamless=collage.layout==='seamless';
+    // Seamless tiles extend into their neighbors; decode a little extra detail.
+    const featherExtra=seamless?Math.max(0,collage.feather*collageDimensions().width/2048)*2:0;
+    const neededW=seamless?cell.w+featherExtra:cell.w;
+    const neededH=seamless?cell.h+featherExtra:cell.h;
+    const desiredScale=collage.fit==='contain' && !seamless?
+      Math.min(neededW/dims.width,neededH/dims.height):
+      Math.max(neededW/dims.width,neededH/dims.height);
     return decode(source,sourceUrl,{desiredScale:Math.min(1,desiredScale*1.12),maxPixels:handheld?11500000:20000000,maxSide:5600});
   }
   async function downloadCollage(){
@@ -1861,8 +1951,10 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
             button.textContent=`고화질 이미지 합성 중… ${i+1}/${photos.length}`;
             const source=useEdited?photos[i].blob:photos[i].file;
             const url=useEdited?photos[i].resultUrl:photos[i].url;
-            const decoded=await collagePhotoForCell(photos[i],source,url,tiles[i]);
-            try {paintCollageTile(ctx,decoded.image,tiles[i],1);}
+            const sampleCell=collage.layout==='seamless' && i===0?
+              {x:0,y:0,w:width,h:height}:tiles[i];
+            const decoded=await collagePhotoForCell(photos[i],source,url,sampleCell);
+            try {paintCollageImage(ctx,decoded.image,tiles[i],i,width,height);}
             finally {decoded.close();}
             await sleep();
           }
@@ -1871,7 +1963,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
           if(!blob || !blob.size)throw new Error('PNG 인코딩 결과가 비어 있습니다.');
           const [a,b]=actualRatio();
           const resized=longSide<collage.resolution?`메모리 보호를 위해 ${longSide}px로 조정했습니다. `:'';
-          saveBlob(blob,`tonal_collage_${useEdited?'보정':'원본'}_${photos.length}장_${a}x${b}_${width}x${height}.png`,resized);
+          saveBlob(blob,`tonal_collage_${collage.layout==='seamless'?'심리스_':''}${useEdited?'보정':'원본'}_${photos.length}장_${a}x${b}_${width}x${height}.png`,resized);
           return;
         }catch(err){
           if(revision!==collageRevision || token!==state.jobToken)throw err;
@@ -1898,6 +1990,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
       const button=e.target.closest(selector);if(!button || state.working || collageSaving || zipSaving)return;
       const next=button.dataset[field];if(!next || collage[field]===next)return;
       collage[field]=next;updateSegment($(id),button);
+      if(field==='layout')updateSeamlessControls();
       if(field==='orientation')updateCollageRatios();
       refreshCollage();
     });
@@ -1919,6 +2012,14 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     });
     $('collage'+name).addEventListener('change',()=>persistProject(false));
   }
+  let featherPreviewFrame=0;
+  $('collageFeather').addEventListener('input',e=>{
+    if(state.working||collageSaving||zipSaving)return;
+    collage.feather=clamp(Number(e.target.value)||0,0,260);
+    $('collageFeatherValue').textContent=String(collage.feather);
+    if(!featherPreviewFrame)featherPreviewFrame=requestAnimationFrame(()=>{featherPreviewFrame=0;refreshCollage();});
+  });
+  $('collageFeather').addEventListener('change',()=>persistProject(false));
   $('collageBackground').addEventListener('click',e=>{
     const button=e.target.closest('button[data-bg]');if(!button||state.working||collageSaving||zipSaving)return;
     collage.background=button.dataset.bg;
