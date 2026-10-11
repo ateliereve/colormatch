@@ -396,19 +396,18 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
 }
 
 
-/* v10: balanced spacing for the two-column photo contact sheet.
-   Keep desktop/mobile widths centralized so the viewport-fit code reads
-   the same computed gap when arranging 1-6 images. */
+/* v11: increase spacing between the two photo columns without modifying
+   the contact sheet layout, photo sizing, or other editing features. */
 @media (min-width:721px){
   .studio-layout .grid{
-    --photo-column-spacing:12px;
+    --photo-column-spacing:20px;
     column-gap:var(--photo-column-spacing)!important;
     width:min(100%,calc(var(--photo-cols) * 260px + (var(--photo-cols) - 1) * var(--photo-column-spacing) + 48px))!important;
   }
 }
 @media (max-width:720px){
   .studio-layout .grid{
-    --photo-column-spacing:9px;
+    --photo-column-spacing:16px;
     column-gap:var(--photo-column-spacing)!important;
     padding-left:8px!important;
     padding-right:8px!important;
