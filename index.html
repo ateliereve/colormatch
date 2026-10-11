@@ -135,18 +135,15 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
       <div class="panel-head"><h2>색감 보정</h2><button type="button" data-close-sheet class="panel-close" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M6 6 18 18M18 6 6 18"/></svg></button></div>
       <div class="panel-scroll">
         <section class="setting-block">
-          <div class="setting-label">색감 맞춤 방식</div>
-          <div class="mode-choices" id="modeControl" role="group" aria-label="색감 맞춤 방식">
-            <button type="button" class="mode-choice active" data-mode="auto" aria-pressed="true"><span class="radio-dot" aria-hidden="true"></span>전체 자동 통일</button>
-            <button type="button" class="mode-choice" data-mode="reference" aria-pressed="false"><span class="radio-dot" aria-hidden="true"></span>기준 사진에 맞추기</button>
-          </div>
+          <div class="setting-label">기준 사진</div>
+          <p id="referenceInfo" class="reference-notice">기준 사진을 따로 선택하지 않으면 첫 번째 사진을 기준으로 맞춥니다.</p>
         </section>
-        <section class="setting-block">
+<section class="setting-block">
           <label class="setting-label" for="strength"><span>보정 강도</span><span class="range-value" id="strengthLabel">75%</span></label>
           <input class="strength" type="range" id="strength" min="0" max="250" step="5" value="75">
           <div class="strength-scale" aria-hidden="true"><span>0%</span><span>100%</span><span>250%</span></div>
         </section>
-        <p id="referenceInfo" class="reference-notice" hidden>기준 사진에 맞추기</p>
+        
       </div>
       <div id="progressBox" class="progress-box" aria-live="polite"><div class="progress-meta"><span id="progressText">이미지를 분석하고 있습니다</span><span id="progressPercent">0%</span></div><div class="progress-track"><div class="progress-fill" id="progressFill"></div></div></div>
       <div class="workspace-actions"><button type="button" class="primary-btn" id="processBtn" disabled>색감 통일</button><button type="button" class="clear-btn" id="clearBtn" disabled>모두 지우기</button></div>
@@ -167,7 +164,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
         <section class="setting-block"><div class="collage-control-label">캔버스 방향</div><div class="collage-segmented" id="collageOrientation" role="group" aria-label="캔버스 방향"><button class="segment active" type="button" data-orientation="portrait" aria-pressed="true">세로</button><button class="segment" type="button" data-orientation="landscape" aria-pressed="false">가로</button></div></section>
         <section class="setting-block"><div class="collage-control-label">콜라주 비율</div><div class="collage-ratios" id="collageRatios" role="group" aria-label="콜라주 비율"></div></section>
         <section class="setting-block collage-subcontrols">
-          <div><div class="collage-control-label">사진 배치</div><div class="collage-segmented" id="collageLayouts" role="group" aria-label="사진 배치"><button class="segment active" type="button" data-layout="smart" aria-pressed="true">자동</button><button class="segment" type="button" data-layout="regular" aria-pressed="false">그리드</button></div></div>
+          <div><div class="collage-control-label">사진 배치</div><div class="collage-segmented" id="collageLayouts" role="group" aria-label="사진 배치"><button class="segment active" type="button" data-layout="regular" aria-pressed="true">그리드</button><button class="segment" type="button" data-layout="smart" aria-pressed="false">자동</button></div></div>
           <div><div class="collage-control-label">사진 맞춤</div><div class="collage-segmented" id="collageFit" role="group" aria-label="사진 맞춤"><button class="segment active" type="button" data-fit="cover" aria-pressed="true">빈틈 없이</button><button class="segment" type="button" data-fit="contain" aria-pressed="false">전체 보기</button></div></div>
         </section>
         <section class="setting-block collage-subcontrols">
@@ -208,10 +205,10 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
 (() => {
   const MAX_FILES = 6;
   const $ = (id) => document.getElementById(id);
-  const state = { photos: [], mode: 'auto', referenceId: null, strength: 75, view: 'after', working: false, done: false, jobToken: 0, runner: null };
+  const state = { photos: [], mode: 'reference', referenceId: null, strength: 75, view: 'after', working: false, done: false, jobToken: 0, runner: null };
   let activeScreen='color';
-  const UI = {"process":"\uc0c9\uac10 \ud1b5\uc77c","clear":"\ubaa8\ub450 \uc9c0\uc6b0\uae30","retry":"\ub2e4\uc2dc \ubcf4\uc815","cancel":"\ucde8\uc18c","photoAdd":"\uc0ac\uc9c4 \uc120\ud0dd","editSettings":"\ubcf4\uc815 \uc124\uc815","collageSettings":"\ucf5c\ub77c\uc8fc \uc124\uc815","collageSave":"\u2193 \ucf5c\ub77c\uc8fc PNG \uc800\uc7a5","ref":"\uae30\uc900 \uc0ac\uc9c4\uc5d0 \ub9de\ucd94\uae30","save":"\uc800\uc7a5"};
-  const collage = {orientation:'portrait', ratio:'3:4', layout:'smart', fit:'cover', gap:0, padding:0, background:'white', resolution:3200};
+  const UI = {"process":"\uc0c9\uac10 \ud1b5\uc77c","clear":"\ubaa8\ub450 \uc9c0\uc6b0\uae30","retry":"\ub2e4\uc2dc \ubcf4\uc815","cancel":"\ucde8\uc18c","photoAdd":"\uc0ac\uc9c4 \uc120\ud0dd","editSettings":"\ubcf4\uc815 \uc124\uc815","collageSettings":"\ucf5c\ub77c\uc8fc \uc124\uc815","collageSave":"\u2193 \ucf5c\ub77c\uc8fc PNG \uc800\uc7a5","ref":"\uae30\uc900 \uc0ac\uc9c4","save":"\uc800\uc7a5"};
+  const collage = {orientation:'portrait', ratio:'3:4', layout:'regular', fit:'cover', gap:0, padding:0, background:'white', resolution:3200};
   let collageRevision=0;
   let collageSaving=false;
   let zipSaving=false;
@@ -261,10 +258,9 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     $('clearBtn').disabled=!total || state.working || collageSaving || zipSaving;
     $('processBtn').disabled=!total || zipSaving || collageSaving;
     $('processBtn').textContent=state.working?UI.cancel:state.done?UI.retry:UI.process;
-    $('modeControl').querySelectorAll('button').forEach(b=>b.disabled=state.working || zipSaving || collageSaving);
     $('strength').disabled=state.working || zipSaving || collageSaving;
     $('resultCount').textContent=total ? `${total} / ${MAX_FILES}` : '';
-    $('referenceInfo').hidden=true;
+    $('referenceInfo').hidden=total<=1;
     $('viewControl').classList.toggle('visible',state.done && state.photos.some(p=>Boolean(p.resultUrl)));
     $('exportBar').classList.toggle('visible',state.done && total>0);
     $('saveCollage').disabled=!total || state.working || collageSaving || zipSaving;
@@ -292,7 +288,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     if(!state.photos.length){$('imageGrid').innerHTML=''; updateControls(); return;}
     $('imageGrid').innerHTML=state.photos.map((p,i)=>{
       const result=Boolean(p.resultUrl);
-      const refMode=state.mode==='reference' && state.photos.length>1;
+      const refMode=state.photos.length>1;
       const refSelected=p.id===state.referenceId;
       return `<article class="photo-card" data-id="${p.id}">
         <div class="photo-frame ${result?'compare-ready':''}" data-view="${state.view}">
@@ -302,7 +298,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
           <button type="button" class="remove-photo" title="${UI.clear}" aria-label="${safe(p.file.name)}" data-action="remove" ${state.working||collageSaving?'disabled':''}>${icons.close}</button>
         </div>
         <div class="photo-meta"><span class="photo-name" title="${safe(p.file.name)}">${safe(p.file.name)}</span><div class="photo-actions">
-          ${refMode?`<button type="button" class="ref-btn ${refSelected?'selected':''}" data-action="ref" ${state.working||collageSaving?'disabled':''}>${refSelected?UI.ref.split(' ')[0]:UI.ref.split(' ')[0]+' '+UI.editSettings.split(' ')[1]}</button>`:''}
+          ${refMode?`<button type="button" class="ref-btn ${refSelected?'selected':''}" data-action="ref" ${state.working||collageSaving?'disabled':''}>${refSelected?UI.ref:'기준으로'}</button>`:''}
           ${result?`<button type="button" class="download-single" data-action="download" aria-label="${safe(p.file.name)} ${UI.save}" title="${UI.save}">${icons.download}</button>`:''}
         </div></div></article>`;
     }).join('');
@@ -497,7 +493,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
   }
   function calculateSettings(profiles, index) {
     const me=profiles[index];
-    const refIdx=state.mode === 'reference' ? Math.max(0,state.photos.findIndex(p=>p.id===state.referenceId)) : -1;
+    const refIdx=Math.max(0,state.photos.findIndex(p=>p.id===state.referenceId));
     const intensity=clamp(state.strength/100,0,1);
     // 100-250% deliberately raises the *actual* correction limits, not
     // just the slider maximum. 0-100% retains the original gentle behavior.
@@ -903,16 +899,20 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     const heightTotal=natural.reduce((t,row)=>t+row.baseHeight,0);
     const tiles=[];
     let y=margin,offset=0;
-    for(const row of natural){
-      const rowH=smart?row.baseHeight/heightTotal*usableH:usableH/rowCount;
+    const contentRight=margin+contentWidth;
+    const contentBottom=margin+contentHeight;
+    natural.forEach((row,rowIndex)=>{
+      const rowBaseH=smart?row.baseHeight/heightTotal*usableH:usableH/rowCount;
+      const rowH=rowIndex===rowCount-1 ? contentBottom-y : rowBaseH;
       let x=margin;
       for(let col=0;col<row.amount;col++){
-        const width=row.width*row.weights[col]/row.sum;
+        const colBaseW=row.width*row.weights[col]/row.sum;
+        const width=col===row.amount-1 ? contentRight-x : colBaseW;
         tiles.push({x,y,w:width,h:rowH});
         x+=width+gap;
       }
       y+=rowH+gap;offset+=row.amount;
-    }
+    });
     let loss=0,small=0;
     for(let i=0;i<tiles.length;i++){
       const cell=tiles[i],targetAspect=cell.w/cell.h,sourceAspect=ratios[i];
@@ -1145,18 +1145,19 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
   $('clearBtn').addEventListener('click',removeAll);
   $('processBtn').addEventListener('click',runCorrection);
   $('downloadAll').addEventListener('click',downloadAll);
-  $('modeControl').addEventListener('click',e=>{
-    const b=e.target.closest('button[data-mode]');if(!b || state.working || zipSaving || collageSaving)return;
-    const mode=b.dataset.mode;if(mode===state.mode)return;
-    state.mode=mode;
-    $('modeControl').querySelectorAll('button').forEach(el=>{const on=el===b;el.classList.toggle('active',on);el.setAttribute('aria-pressed',String(on));});
-    invalidate();drawCards();
-  });
-  $('strength').addEventListener('input',e=>{
-    const value=Number(e.target.value);
-    $('strengthLabel').textContent=value+'%';
-  });
-  $('strength').addEventListener('change',e=>{state.strength=Number(e.target.value);invalidate();drawCards();});
+  function syncStrength(value,commit=false){
+    const next=Number(value);
+    if(!Number.isFinite(next))return;
+    state.strength=next;
+    $('strengthLabel').textContent=next+'%';
+    if(commit && state.done){
+      invalidate();
+      drawCards();
+      if(activeScreen==='collage')refreshCollage();
+    }
+  }
+  $('strength').addEventListener('input',e=>{syncStrength(e.target.value,false);});
+  $('strength').addEventListener('change',e=>{syncStrength(e.target.value,true);});
   $('viewControl').addEventListener('click',e=>{
     const b=e.target.closest('button[data-view]');if(!b)return;
     state.view=b.dataset.view;
@@ -1182,7 +1183,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     const action=b.dataset.action;
     if(action==='open')openPhoto(photo);
     else if(action==='remove')removePhoto(photo.id);
-    else if(action==='ref'){state.referenceId=photo.id;invalidate();drawCards();}
+    else if(action==='ref'){state.referenceId=photo.id;invalidate();drawCards();if(activeScreen==='collage')refreshCollage();}
     else if(action==='download' && photo.blob)saveBlob(photo.blob,resultName(photo,state.photos.indexOf(photo)));
   });
   $('detailRange').addEventListener('input',e=>{
