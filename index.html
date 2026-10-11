@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light"><meta name="theme-color" content="#f7f7f7">
 <title>tonal. — 사진 색감 통일</title>
-<!-- build: 2026-10-11 v4 collage-canvas-fit inline-strength -->
+<!-- build: 2026-10-11 v5 stable-photo-grid collage-edge-fixed dual-export -->
 <style>
 :root{color-scheme:light;--paper:#f7f7f7;--panel:#ffffff;--white:#ffffff;--ink:#171717;--sub:#666666;--line:#e5e5e5;--dark:#262626;--dark2:#2d2d2d;--darkline:#404040;--accent:#171717;--ease:cubic-bezier(.22,1,.36,1)}
 *{box-sizing:border-box}
@@ -275,18 +275,53 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
 }
 
 
-/* Portrait contact sheet: collect the rows together, not spread across empty space. */
-@media(min-width:721px){
-  .stage .grid[data-count="1"] .photo-card,
-  .stage .grid[data-count="2"] .photo-card,
-  .stage .grid[data-count="3"] .photo-card{
-    height:min(100%,440px);max-height:440px;align-self:center;
-  }
-}
+/* v5 - stable color preview and compact editing controls */
+/* This switch occupies the same toolbar footprint before and after processing. */
+.stage-toolbar{min-height:72px;box-sizing:border-box;}
+.preview-switch{display:flex!important;visibility:hidden;pointer-events:none;}
+.preview-switch.visible{visibility:visible;pointer-events:auto;}
+.stage-footer{display:none!important;}
+/* Export actions reuse an existing row rather than inserting a new bar below photos. */
+.workspace-action-buttons{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;}
+.workspace-action-buttons.dual-actions{grid-template-columns:repeat(2,minmax(0,1fr));}
+.workspace-action-buttons .primary-btn{min-width:0;width:100%;white-space:nowrap;padding:11px 6px;font-size:12px;}
+.secondary-action{background:#ebebeb!important;color:#232323!important;border:1px solid #d9d9d9;}
+.secondary-action:hover:enabled{background:#dedede!important;}
+/* Prevent the photo metadata row from growing when a download icon appears. */
+.photo-card .photo-meta{height:30px;min-height:30px;max-height:30px;overflow:hidden;}
+.photo-actions{height:27px;}
+/* Cover the anti-aliased rightmost subpixel without changing exported bitmap. */
+.collage-checker{isolation:isolate;overflow:hidden!important;}
+.collage-checker canvas{position:absolute!important;left:-1px;top:-1px;
+  min-width:0!important;max-width:none!important;max-height:none!important;
+  width:calc(100% + 2px)!important;height:calc(100% + 2px)!important;
+  object-fit:fill!important;display:block!important;}
 @media(max-width:720px){
-  .studio-layout>.stage .grid{grid-template-rows:repeat(var(--photo-rows),max-content)!important;
-    align-content:center!important;align-items:center!important;justify-items:center!important;}
-  .studio-layout>.stage .grid .photo-card{height:auto!important;min-height:0!important;max-height:none!important;}
+  /* Restore the earlier count-based portrait grid for 1-6 photos. */
+  .stage-toolbar{height:45px;min-height:45px;max-height:45px;flex:0 0 45px!important;padding:9px 15px!important;}
+  .grid{grid-template-columns:repeat(var(--photo-cols),minmax(0,1fr))!important;
+    grid-template-rows:repeat(var(--photo-rows),max-content)!important;
+    justify-items:center!important;align-items:center!important;align-content:center!important;
+    padding:2px 12px 8px!important;gap:7px 11px!important;}
+  .grid .photo-card{width:var(--frame-width,120px)!important;height:auto!important;
+    align-self:center!important;justify-self:center!important;max-height:100%!important;}
+  .grid .photo-frame{aspect-ratio:3/4!important;width:100%!important;
+    height:var(--frame-height,150px)!important;max-height:none!important;
+    flex:0 0 var(--frame-height,150px)!important;}
+  .grid .photo-meta{height:23px!important;min-height:23px!important;max-height:23px!important;padding-top:2px!important;}
+  .grid .photo-actions{height:20px;}
+  .grid .photo-name{font-size:9px!important;padding-top:1px;}
+  .inline-color-tools{padding:5px 15px 6px!important;}
+  .inline-color-tools .setting-label{margin-bottom:0!important;font-size:11px!important;}
+  .inline-color-tools .range-value{font-size:13px;}
+  .inline-color-tools .strength-control{height:34px!important;}
+  .inline-color-tools .strength-track{height:4px;}
+  .inline-color-tools .strength-thumb{height:21px;width:21px;}
+  .inline-color-tools .strength-scale{font-size:10px;margin-top:-1px!important;}
+  body:not(.in-collage) .mobile-bar{grid-template-columns:minmax(0,1fr)!important;}
+  body.has-results:not(.in-collage) .mobile-bar{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+  body:not(.in-collage) .mobile-bar .mobile-tools-toggle{display:none!important;}
+  .mobile-primary{min-width:0;font-size:12px;padding:8px 5px;white-space:nowrap;}
 }
 
 </style>
@@ -328,7 +363,13 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
         
       </div>
       <div id="progressBox" class="progress-box" aria-live="polite"><div class="progress-meta"><span id="progressText">이미지를 분석하고 있습니다</span><span id="progressPercent">0%</span></div><div class="progress-track"><div class="progress-fill" id="progressFill"></div></div></div>
-      <div class="workspace-actions"><button type="button" class="primary-btn" id="processBtn" disabled>색감 통일</button><button type="button" class="clear-btn" id="clearBtn" disabled>모두 지우기</button></div>
+      <div class="workspace-actions">
+        <div class="workspace-action-buttons" id="desktopExportActions">
+          <button type="button" class="primary-btn" id="processBtn" disabled>색감 통일</button>
+          <button type="button" class="primary-btn secondary-action" id="downloadAll" hidden disabled>전체 ZIP 저장</button>
+        </div>
+        <button type="button" class="clear-btn" id="clearBtn" disabled>모두 지우기</button>
+      </div>
     </aside>
     <section class="stage" id="results" aria-label="미리보기">
       <div class="stage-toolbar">
@@ -337,7 +378,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
       </div>
       <div id="imageGrid" class="grid" aria-live="polite"></div>
       <div id="inlineColorTools" class="inline-color-tools" aria-label="보정 강도"></div>
-      <div id="exportBar" class="stage-footer"><span class="stage-footer-text">PNG · JPG</span><button id="downloadAll" type="button" class="primary-btn">전체 ZIP 저장</button></div>
+
     </section>
   </div>
   <section class="collage-section" id="collageSection" hidden aria-label="콜라주">
@@ -380,6 +421,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
 <div id="mobileBar" class="mobile-bar" hidden>
   <button type="button" id="mobileToolsToggle" class="mobile-tools-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 6h16M8 12h12M4 18h16"/><circle cx="6" cy="12" r="2" fill="currentColor" stroke="none"/></svg><span id="mobileToolsLabel">보정 설정</span></button>
   <button type="button" id="mobilePrimary" class="primary-btn mobile-primary">색감 통일</button>
+  <button type="button" id="mobileZip" class="primary-btn mobile-primary secondary-action" hidden>전체 ZIP 저장</button>
 </div>
 <div id="sheetScrim" class="sheet-scrim" aria-hidden="true"></div>
 <dialog id="photoDialog" class="photo-dialog" aria-label="미리보기">
@@ -457,7 +499,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     const horizontal=r.width-parseFloat(css.paddingLeft)-parseFloat(css.paddingRight)-(cols-1)*parseFloat(css.columnGap);
     const vertical=r.height-parseFloat(css.paddingTop)-parseFloat(css.paddingBottom)-(rows-1)*parseFloat(css.rowGap);
     const cellW=horizontal/cols,cellH=vertical/rows;
-    const frameHeight=Math.max(24,Math.floor(Math.min(cellH-26,cellW*4/3,280)));
+    const frameHeight=Math.max(24,Math.floor(Math.min(cellH-25,cellW*4/3,310)));
     const frameWidth=Math.max(18,Math.floor(frameHeight*3/4));
     g.style.setProperty('--frame-height',frameHeight+'px');
     g.style.setProperty('--frame-width',frameWidth+'px');
@@ -481,7 +523,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     $('fileInput').disabled=state.working || collageSaving || zipSaving;
     $('clearBtn').disabled=!total || state.working || collageSaving || zipSaving;
     $('processBtn').disabled=!total || zipSaving || collageSaving;
-    $('processBtn').textContent=state.working?UI.cancel:UI.process;
+    $('processBtn').textContent=state.working?UI.cancel:state.done?'다시 보정':UI.process;
     const strengthDisabled=state.working || zipSaving || collageSaving;
     $('strength').classList.toggle('is-disabled',strengthDisabled);
     $('strength').setAttribute('aria-disabled',String(strengthDisabled));
@@ -500,7 +542,9 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     $('referenceBlock').hidden=total<=1;
     $('referenceInfo').textContent=`${String(Math.max(0,state.photos.findIndex(p=>p.id===state.referenceId))+1).padStart(2,'0')}번 사진`;
     $('viewControl').classList.toggle('visible',state.done && state.photos.some(p=>Boolean(p.resultUrl)));
-    $('exportBar').classList.toggle('visible',state.done && total>0);
+    $('desktopExportActions').classList.toggle('dual-actions',state.done && total>0);
+    $('downloadAll').hidden=!state.done || !total;
+    $('mobileZip').hidden=!state.done || !total || activeScreen!=='color';
     $('saveCollage').disabled=!total || state.working || collageSaving || zipSaving;
     $('downloadAll').disabled=!state.done || state.working || collageSaving || zipSaving;
     $('tabCollage').disabled=!total || state.working || zipSaving || collageSaving;
@@ -511,8 +555,9 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     syncToolsToggle();
     $('mobileToolsToggle').hidden=activeScreen!=='collage';
     queuePhotoFit();
-    $('mobilePrimary').textContent=activeScreen==='collage'?UI.collageSave:state.working?UI.cancel:state.done?'전체 ZIP 저장':UI.process;
+    $('mobilePrimary').textContent=activeScreen==='collage'?UI.collageSave:state.working?UI.cancel:state.done?'다시 보정':UI.process;
     $('mobilePrimary').disabled=zipSaving || (activeScreen==='collage'?(!total || state.working || collageSaving):(!total || collageSaving));
+    $('mobileZip').disabled=!state.done || !total || state.working || zipSaving || collageSaving;
   }
   function invalidate() {
     if($('photoDialog').open)$('photoDialog').close();
@@ -1091,16 +1136,17 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
   async function downloadAll() {
     if(!state.done || state.working || zipSaving || collageSaving)return;
     const button=$('downloadAll'),label=button.textContent;
-    zipSaving=true;updateControls();button.textContent='ZIP 만드는 중…';
+    zipSaving=true;updateControls();button.textContent='ZIP 만드는 중…';$('mobileZip').textContent='ZIP 만드는 중…';
     try {
       const items=state.photos.map((p,i)=>({blob:p.blob,name:resultName(p,i)}));
       const zip=await makeZip(items,(index,count)=>{
         button.textContent=`ZIP 만드는 중… ${index}/${count}`;
+        $('mobileZip').textContent=`ZIP ${index}/${count}`;
         flash(`사진 ${index}/${count} ZIP 파일로 준비 중…`);
       });
       saveBlob(zip,`tonal_색감통일_${items.length}장.zip`);
     }catch(err){flash(`ZIP 저장 오류: ${err.message} 사진별 저장을 시도해주세요.`,true);}
-    finally {zipSaving=false;button.textContent=label;updateControls();}
+    finally {zipSaving=false;button.textContent=label;$('mobileZip').textContent='전체 ZIP 저장';updateControls();}
   }
 
 
@@ -1213,18 +1259,30 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     const maxW=Math.max(1,box.width-parseFloat(css.paddingLeft)-parseFloat(css.paddingRight));
     const maxH=Math.max(1,box.height-parseFloat(css.paddingTop)-parseFloat(css.paddingBottom));
     const ratio=canvas.width/canvas.height;
-    const width=Math.max(1,Math.min(maxW,maxH*ratio));
-    const height=width/ratio;
+    // Pixel-align the visible bitmap with its clipping box. Fractional CSS sizes
+    // previously exposed a hairline from the preview backdrop at the right edge.
+    const dpr=Math.max(1,window.devicePixelRatio||1);
+    const availableW=Math.max(1,Math.floor(maxW*dpr)/dpr);
+    const availableH=Math.max(1,Math.floor(maxH*dpr)/dpr);
+    let width=Math.min(availableW, availableH*ratio);
+    let height=width/ratio;
+    if(height>availableH){height=availableH;width=height*ratio;}
+    // Use an integer pixel-aligned outer clipping edge.
+    width=Math.max(1,Math.floor(width*dpr)/dpr);
+    height=Math.max(1,Math.floor(height*dpr)/dpr);
     checker.style.width=width+'px';checker.style.height=height+'px';
     checker.style.aspectRatio=String(ratio);
     // Never allow an intrinsic-size flex child to leave a checkerboard strip on the right.
-    canvas.style.width='100%';canvas.style.height='100%';
+    canvas.style.width='calc(100% + 2px)';canvas.style.height='calc(100% + 2px)';
   }
   function syncCollagePreviewBackground(){
     const c=$('collageCanvas');
     const color=collageBackgrounds[collage.background];
     // Checkerboard is solely a preview for *explicitly* transparent canvas pixels.
-    c.style.background=color || 'conic-gradient(#b8b8b8 25%,#dadada 0 50%,#b8b8b8 0 75%,#dadada 0) 0 0/14px 14px';
+    const checker=document.querySelector('.collage-checker');
+    const backdrop=color || 'conic-gradient(#b8b8b8 25%,#dadada 0 50%,#b8b8b8 0 75%,#dadada 0) 0 0/14px 14px';
+    c.style.background=backdrop;
+    checker.style.background=backdrop;
   }
   function updateCollageSize() {
     const {width,height}=collageDimensions();
@@ -1734,9 +1792,9 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
   $('mobilePrimary').addEventListener('click',()=>{
     closeTools();
     if(activeScreen==='collage')downloadCollage();
-    else if(state.done)downloadAll();
     else runCorrection();
   });
+  $('mobileZip').addEventListener('click',()=>{if(state.done)downloadAll();});
   function switchScreen(next){
     if(next==='collage' && (!state.photos.length || state.working))return;
     activeScreen=next; closeTools(); updateControls();
