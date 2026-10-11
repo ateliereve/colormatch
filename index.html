@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light"><meta name="theme-color" content="#f7f7f7">
 <title>tonal. — 사진 색감 통일</title>
-<!-- build: 2026-10-11 v5 stable-photo-grid collage-edge-fixed dual-export -->
+<!-- build: 2026-10-11 v7 compact-landscape-preview -->
 <style>
 :root{color-scheme:light;--paper:#f7f7f7;--panel:#ffffff;--white:#ffffff;--ink:#171717;--sub:#666666;--line:#e5e5e5;--dark:#262626;--dark2:#2d2d2d;--darkline:#404040;--accent:#171717;--ease:cubic-bezier(.22,1,.36,1)}
 *{box-sizing:border-box}
@@ -275,6 +275,15 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
 }
 
 
+/* Session persistence and explicit collage reset controls. */
+.storage-indicator{font-size:11px;color:#7b7b7b;white-space:nowrap;letter-spacing:-.01em;}
+.storage-indicator[data-status="error"]{color:#333;font-weight:650}
+.collage-reset-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;
+  padding:12px 22px 19px;background:#fff;border-top:1px solid var(--line);flex:0 0 auto}
+.collage-reset-actions button{min-width:0;min-height:36px;border:1px solid #dedede;background:#fff;
+  color:#555;border-radius:3px;font-size:12px;font-weight:600;padding:8px 5px}
+.collage-reset-actions button:hover:enabled{border-color:#9b9b9b;background:#f7f7f7;color:#222}
+@media(max-width:720px){.storage-indicator{font-size:10px}.collage-reset-actions{padding:10px 18px 11px}}
 /* v5 - stable color preview and compact editing controls */
 /* This switch occupies the same toolbar footprint before and after processing. */
 .stage-toolbar{min-height:72px;box-sizing:border-box;}
@@ -324,6 +333,68 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
   .mobile-primary{min-width:0;font-size:12px;padding:8px 5px;white-space:nowrap;}
 }
 
+
+/* v7 — compact monochrome tools and landscape contact sheet. */
+.photo-card .photo-meta{height:28px;min-height:28px;max-height:28px;padding:4px 0 0;align-items:center;overflow:hidden}
+.photo-card .photo-actions{width:100%;height:23px;display:flex;align-items:center;justify-content:space-between;gap:6px;min-width:0}
+.photo-card .ref-btn{flex:0 1 auto;white-space:nowrap;font-size:10px;padding:3px 7px}
+.photo-card .download-single{flex:none;padding:3px;min-width:24px;min-height:23px;display:grid;place-items:center}
+.photo-card .download-single svg{width:16px;height:16px}
+/* Set tile geometry independently of image contents and correction state. */
+.studio-layout .grid .photo-card{width:var(--frame-width,240px)!important;height:auto!important;max-height:100%!important;min-height:0!important;justify-self:center!important;align-self:center!important;display:flex!important;flex-direction:column!important;justify-content:center!important}
+.studio-layout .grid .photo-frame{width:100%!important;height:var(--frame-height,180px)!important;aspect-ratio:4/3!important;flex:0 0 var(--frame-height,180px)!important;min-height:0!important;max-height:none!important;overflow:hidden!important}
+.stage-toolbar{height:48px!important;min-height:48px!important;max-height:48px!important;flex:0 0 48px!important;padding:7px 22px!important;gap:8px}
+.stage-title{gap:6px}
+.stage-title h2{font-size:12px;font-weight:600}
+.stage-count{font-size:10px}
+.preview-switch{gap:1px;padding:2px;border-radius:3px}
+.preview-switch button{min-width:43px;padding:4px 7px;font-size:10px}
+.collage-preview-head{box-sizing:border-box;height:48px;min-height:48px;max-height:48px;flex:0 0 48px;padding:7px 22px!important;align-items:center!important;gap:8px}
+.collage-preview-head strong{font-size:12px;font-weight:600}
+.collage-preview-head span{font-size:10px}
+/* A compact 130%-to-250% control, retaining the original pointer hit area. */
+#strengthBlock .setting-label{font-size:11px;margin-bottom:6px}
+#strengthBlock .range-value{font-size:13px}
+#strengthBlock .strength-control{height:38px}
+#strengthBlock .strength-track{height:4px}
+#strengthBlock .strength-thumb{height:21px;width:21px}
+#strengthBlock .strength-scale{font-size:10px;margin-top:1px}
+.workspace-action-buttons .primary-btn{min-height:37px;padding:7px 5px;font-size:11px}
+.workspace-actions{padding-top:12px;padding-bottom:15px}
+@media(max-width:720px){
+  :root{--mobile-footer-height:calc(60px + max(0px,env(safe-area-inset-bottom) - 8px))}
+  .studio-layout>.stage{height:calc(100dvh - 106px - var(--mobile-footer-height))!important}
+  .stage-toolbar{height:35px!important;min-height:35px!important;max-height:35px!important;flex:0 0 35px!important;padding:4px 13px!important}
+  .stage-title h2{font-size:11px}
+  .stage-count{font-size:10px}
+  .preview-switch button{font-size:10px;min-width:40px;padding:3px 6px}
+  .studio-layout .grid{gap:6px 9px!important;padding:3px 10px 7px!important;justify-items:center!important;align-items:center!important}
+  .studio-layout .grid .photo-card{width:var(--frame-width,110px)!important;height:auto!important;max-height:100%!important;max-width:100%!important;justify-self:center!important;align-self:center!important}
+  .studio-layout .grid .photo-frame{width:100%!important;height:var(--frame-height,83px)!important;aspect-ratio:4/3!important;max-height:none!important;flex:0 0 var(--frame-height,83px)!important}
+  .studio-layout .grid .photo-meta{height:22px!important;min-height:22px!important;max-height:22px!important;padding:2px 0 0!important}
+  .studio-layout .grid .photo-actions{height:20px;gap:3px}
+  .studio-layout .grid .ref-btn{font-size:9px;padding:2px 5px}
+  .studio-layout .grid .download-single{width:21px;height:20px;min-height:20px;min-width:21px;padding:2px}
+  .studio-layout .grid .download-single svg{height:15px;width:15px}
+  .inline-color-tools{padding:4px 13px 5px!important}
+  .inline-color-tools .setting-label{font-size:10px!important;margin-bottom:0!important}
+  .inline-color-tools .range-value{font-size:12px!important}
+  .inline-color-tools .strength-control{height:27px!important}
+  .inline-color-tools .strength-track{height:3px!important}
+  .inline-color-tools .strength-thumb{height:19px!important;width:19px!important}
+  .inline-color-tools .strength-scale{font-size:9px!important;margin-top:0!important}
+  .mobile-bar{min-height:60px!important;padding:8px 12px max(8px,env(safe-area-inset-bottom))!important;gap:8px!important}
+  .mobile-bar .primary-btn,.mobile-bar .mobile-tools-toggle{min-height:36px!important;height:36px!important;padding:6px 4px!important;font-size:11px!important}
+  .collage-preview-head{height:35px!important;min-height:35px!important;max-height:35px!important;flex:0 0 35px!important;padding:5px 13px!important}
+  .collage-preview-head strong{font-size:11px!important}
+  .collage-preview-head span{font-size:10px!important}
+  body.sheet-open .collage-preview-head{display:flex!important;height:28px!important;min-height:28px!important;max-height:28px!important;flex:0 0 28px!important;padding:3px 12px!important;align-items:center!important}
+  body.sheet-open .collage-preview-head strong{font-size:10px!important}
+  body.sheet-open .collage-preview-head span{font-size:9px!important}
+  body.sheet-open .collage-preview-shell{flex:1 1 0!important;min-height:0!important;height:auto!important;max-height:none!important;padding:2px 9px 5px!important}
+  body.sheet-open .collage-preview-column{display:flex!important;flex-direction:column!important}
+}
+
 </style>
 </head>
 <body>
@@ -333,7 +404,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     <button id="tabColor" class="top-tab active" type="button" aria-current="page">색감 보정</button>
     <button id="tabCollage" class="top-tab" type="button" disabled>콜라주</button>
   </nav>
-  <div class="top-actions"><span id="headerCount" class="header-count" hidden><b id="counter">0</b> / 6</span>
+  <div class="top-actions"><span id="autoSaveLabel" class="storage-indicator" hidden aria-live="polite"></span><span id="headerCount" class="header-count" hidden><b id="counter">0</b> / 6</span>
     <button id="headerAdd" class="header-add" type="button" hidden><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>사진 선택</button>
   </div>
 </header>
@@ -407,6 +478,10 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
         </div></section>
         <section class="setting-block"><label class="collage-control-label" for="collageResolution">저장 화질</label><select class="collage-select" id="collageResolution"><option value="2400">표준 · 긴 변 2400px</option><option value="3200" selected>고화질 · 긴 변 3200px</option><option value="4000">초고화질 · 긴 변 4000px</option></select></section>
       </div>
+      <div class="collage-reset-actions">
+        <button type="button" id="resetCollageSettings" title="사진은 유지하고 콜라주 설정과 사진 순서를 기본값으로 되돌립니다">설정 초기화</button>
+        <button type="button" id="resetCollageAll" title="사진과 보정 결과를 포함한 작업 전체를 삭제합니다">전체 초기화</button>
+      </div>
     </aside>
     <div class="collage-preview-column">
       <div class="collage-preview-head"><strong>미리보기</strong><span id="collageOutputSize">2400 × 3200px</span></div>
@@ -437,7 +512,8 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
   const state = { photos: [], mode: 'reference', referenceId: null, strength: 130, view: 'after', working: false, done: false, jobToken: 0, runner: null };
   let activeScreen='color';
   const UI = {"process":"\uc0c9\uac10 \ud1b5\uc77c","clear":"\ubaa8\ub450 \uc9c0\uc6b0\uae30","cancel":"\ucde8\uc18c","photoAdd":"\uc0ac\uc9c4 \uc120\ud0dd","editSettings":"\ubcf4\uc815 \uc124\uc815","collageSettings":"\ucf5c\ub77c\uc8fc \uc124\uc815","collageSave":"\u2193 \ucf5c\ub77c\uc8fc PNG \uc800\uc7a5","ref":"\uae30\uc900 \uc0ac\uc9c4","save":"\uc800\uc7a5"};
-  const collage = {orientation:'portrait', ratio:'3:4', layout:'regular', fit:'cover', gap:0, padding:0, background:'white', resolution:3200};
+  const DEFAULT_COLLAGE = Object.freeze({orientation:'portrait',ratio:'3:4',layout:'regular',fit:'cover',gap:0,padding:0,background:'white',resolution:3200});
+  const collage={...DEFAULT_COLLAGE};
   let collageOrderIds=[];
   let pendingRemovalId=null;
   let pendingRemovalTimeout=null;
@@ -471,6 +547,160 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     const el=$('status');el.classList.remove('visible','error');
     el.replaceChildren();
   }
+  // Local-only project persistence. Binary files remain in IndexedDB, never leave the browser.
+  // Metadata has a separate store so frequent slider/layout changes don't re-copy photo blobs.
+  const PROJECT_DB='tonal-project-local-v1';
+  let projectReady=false,projectDBPromise=null,saveQueue=Promise.resolve(),metaTimer=null;
+  let storageFailed=false;
+  function storageIndicator(label,status='ok'){
+    const el=$('autoSaveLabel');
+    el.textContent=label;el.hidden=false;el.dataset.status=status;
+  }
+  function openProjectDB(){
+    if(projectDBPromise)return projectDBPromise;
+    projectDBPromise=new Promise((resolve,reject)=>{
+      if(!('indexedDB' in window)){reject(new Error('이 브라우저에서는 로컬 파일 저장을 지원하지 않습니다.'));return;}
+      const request=indexedDB.open(PROJECT_DB,1);
+      request.onupgradeneeded=()=>{
+        const db=request.result;
+        if(!db.objectStoreNames.contains('project'))db.createObjectStore('project');
+        if(!db.objectStoreNames.contains('photos'))db.createObjectStore('photos',{keyPath:'id'});
+      };
+      request.onsuccess=()=>{const db=request.result;db.onversionchange=()=>db.close();resolve(db);};
+      request.onerror=()=>reject(request.error||new Error('사진 저장소를 열 수 없습니다.'));
+      request.onblocked=()=>reject(new Error('다른 탭에서 데이터베이스가 사용 중입니다.'));
+    });
+    return projectDBPromise;
+  }
+  function projectMetadata(){
+    return {version:1,photoIds:state.photos.map(p=>p.id),referenceId:state.referenceId,
+      strength:state.strength,view:state.view,done:state.done,activeScreen,
+      collage:{...collage},collageOrderIds:[...collageOrderIds],
+      compare:state.photos.map(p=>[p.id,p.compare??50])};
+  }
+  function persistProject(includePhotos=false){
+    if(!projectReady || storageFailed)return Promise.resolve();
+    if(metaTimer){clearTimeout(metaTimer);metaTimer=null;}
+    const meta=projectMetadata();
+    const storedPhotos=includePhotos?state.photos.map(p=>({
+      id:p.id,name:p.file.name,type:p.file.type,lastModified:p.file.lastModified,
+      original:p.file,edited:state.done?p.blob:null
+    })):null;
+    storageIndicator('저장 중…');
+    saveQueue=saveQueue.catch(()=>{}).then(async()=>{
+      const db=await openProjectDB();
+      return new Promise((resolve,reject)=>{
+        const tx=db.transaction(includePhotos?['project','photos']:['project'],'readwrite');
+        tx.oncomplete=resolve;
+        tx.onerror=()=>reject(tx.error||new Error('브라우저 저장 공간이 부족할 수 있습니다.'));
+        tx.onabort=()=>reject(tx.error||new Error('저장 작업이 취소되었습니다.'));
+        tx.objectStore('project').put(meta,'session');
+        if(includePhotos){
+          const ps=tx.objectStore('photos');
+          ps.clear();
+          for(const photo of storedPhotos)ps.put(photo);
+        }
+      });
+    }).then(()=>{storageIndicator('저장됨');}).catch(error=>{
+      storageIndicator('저장 실패','error');
+      flash(`자동 저장에 실패했습니다. ${error?.name==='QuotaExceededError'?'브라우저 저장 공간이 부족합니다.':error?.message||'브라우저 저장소를 확인해주세요.'}`,true);
+    });
+    return saveQueue;
+  }
+  function scheduleProjectMeta(){
+    if(!projectReady||storageFailed)return;
+    if(metaTimer)clearTimeout(metaTimer);
+    metaTimer=setTimeout(()=>{metaTimer=null;persistProject(false);},280);
+  }
+  // Startup hydration creates fresh object URLs so saved files work after a reload.
+  async function restoreProject(){
+    try{
+      storageIndicator('불러오는 중…');
+      const db=await openProjectDB();
+      const {meta,records}=await new Promise((resolve,reject)=>{
+        const tx=db.transaction(['project','photos'],'readonly');
+        const a=tx.objectStore('project').get('session');
+        const b=tx.objectStore('photos').getAll();
+        tx.oncomplete=()=>resolve({meta:a.result||null,records:b.result||[]});
+        tx.onerror=()=>reject(tx.error||new Error('저장된 작업을 읽지 못했습니다.'));
+      });
+      if(meta && Array.isArray(meta.photoIds)){
+        const indexed=new Map(records.map(r=>[r.id,r]));
+        const parsed=[];
+        for(const id of meta.photoIds.slice(0,MAX_FILES)){
+          const record=indexed.get(id);
+          if(!record || !(record.original instanceof Blob))continue;
+          const file=new File([record.original],record.name||'photo.png',{
+            type:record.type||record.original.type||'image/png',lastModified:record.lastModified||Date.now()});
+          const edited=record.edited instanceof Blob && record.edited.size>0?record.edited:null;
+          parsed.push({id,file,url:URL.createObjectURL(file),blob:edited,
+            resultUrl:edited?URL.createObjectURL(edited):null,
+            profile:null,compare:50,collageThumb:null,collageSource:null,collageSize:null});
+        }
+        const compare=new Map(Array.isArray(meta.compare)?meta.compare:[]);
+        parsed.forEach(p=>p.compare=clamp(Number(compare.get(p.id)??50),0,100));
+        state.photos=parsed;
+        idSequence=Math.max(0,...parsed.map(p=>p.id));
+        state.referenceId=parsed.some(p=>p.id===meta.referenceId)?meta.referenceId:(parsed[0]?.id??null);
+        state.done=Boolean(meta.done && parsed.length && parsed.every(p=>Boolean(p.resultUrl)));
+        if(!state.done){
+          for(const photo of parsed){if(photo.resultUrl)URL.revokeObjectURL(photo.resultUrl);photo.resultUrl=null;photo.blob=null;}
+        }
+        state.view=meta.view==='before'?'before':'after';
+        activeScreen=meta.activeScreen==='collage' && parsed.length?'collage':'color';
+        if(meta.collage&&typeof meta.collage==='object'){
+          for(const key of Object.keys(DEFAULT_COLLAGE)){
+            const value=meta.collage[key];
+            if(typeof DEFAULT_COLLAGE[key]===typeof value)collage[key]=value;
+          }
+        }
+        const validIds=new Set(parsed.map(p=>p.id));
+        collageOrderIds=Array.isArray(meta.collageOrderIds)?meta.collageOrderIds.filter(id=>validIds.has(id)):[];
+        syncStrength(Number.isFinite(Number(meta.strength))?meta.strength:130);
+        // Restore all visible control states without changing the saved photo objects.
+        updateAllCollageControls();
+        setPreviewView(state.view);
+        drawCards();renderCollageOrder();
+        if(activeScreen==='collage'){refreshCollage();queueCollageFit();}
+        else queuePhotoFit();
+      }
+      storageIndicator('저장됨');
+    }catch(error){
+      storageFailed=true;
+      storageIndicator('자동 저장 불가','error');
+      flash(`브라우저에 자동 저장할 수 없습니다. ${error?.message||''}`,true);
+    }finally{
+      projectReady=true;
+      $('pickBtn').disabled=false;
+      $('fileInput').disabled=state.working||collageSaving||zipSaving;
+    }
+  }
+  function updateAllCollageControls(){
+    for(const [parent,attr,key] of [
+      ['collageOrientation','orientation','orientation'],
+      ['collageLayouts','layout','layout'],['collageFit','fit','fit'],
+      ['collageBackground','bg','background']]){
+      $(parent).querySelectorAll('button').forEach(button=>{
+        const selected=button.dataset[attr]===collage[key];
+        button.classList.toggle('active',selected);
+        button.setAttribute('aria-pressed',String(selected));
+      });
+    }
+    for(const [suffix,key] of [['Gap','gap'],['Padding','padding']]){
+      $('collage'+suffix).value=String(collage[key]);
+      $('collage'+suffix+'Value').textContent=collage[key]+'px';
+    }
+    $('collageResolution').value=String(collage.resolution);
+    updateCollageRatios();updateCollageSize();
+  }
+  function resetCollageSettings(){
+    if(state.working||collageSaving||zipSaving)return;
+    Object.assign(collage,DEFAULT_COLLAGE);
+    collageOrderIds=state.photos.map(p=>p.id);
+    updateAllCollageControls();renderCollageOrder();
+    refreshCollage();queueCollageFit();persistProject(false);
+  }
+
   function progress(value, description) {
     value = clamp(value, 0, 100);
     $('progressBox').classList.add('visible');
@@ -490,7 +720,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     photoFitFrame=requestAnimationFrame(()=>{photoFitFrame=0;fitPhotoGrid();});
   }
   function fitPhotoGrid(){
-    if(window.innerWidth>720 || activeScreen!=='color' || !state.photos.length)return;
+    if(activeScreen!=='color' || !state.photos.length)return;
     const g=$('imageGrid'),r=g.getBoundingClientRect();
     if(r.width<20 || r.height<20)return;
     const css=getComputedStyle(g);
@@ -499,8 +729,12 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     const horizontal=r.width-parseFloat(css.paddingLeft)-parseFloat(css.paddingRight)-(cols-1)*parseFloat(css.columnGap);
     const vertical=r.height-parseFloat(css.paddingTop)-parseFloat(css.paddingBottom)-(rows-1)*parseFloat(css.rowGap);
     const cellW=horizontal/cols,cellH=vertical/rows;
-    const frameHeight=Math.max(24,Math.floor(Math.min(cellH-25,cellW*4/3,310)));
-    const frameWidth=Math.max(18,Math.floor(frameHeight*3/4));
+    // Landscape 4:3 contact-sheet tiles; subtract the fixed metadata row so
+    // corrected and original cards occupy exactly the same geometry.
+    const controlsHeight=window.innerWidth<=720?25:32;
+    const maxWidth=window.innerWidth<=720?340:260;
+    const frameWidth=Math.max(25,Math.floor(Math.min(cellW,Math.max(1,cellH-controlsHeight)*4/3,maxWidth)));
+    const frameHeight=Math.max(19,Math.floor(frameWidth*3/4));
     g.style.setProperty('--frame-height',frameHeight+'px');
     g.style.setProperty('--frame-width',frameWidth+'px');
   }
@@ -568,6 +802,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
       p.resultUrl = null; p.blob = null; p.compare = 50; p.collageThumb = null; p.collageSource = null; p.collageSize = null;
     }
     resetProgress(); clearFlash();
+    scheduleProjectMeta();
   }
   function clearPendingRemoval(){
     if(pendingRemovalTimeout){clearTimeout(pendingRemovalTimeout);pendingRemovalTimeout=null;}
@@ -604,7 +839,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
           <span class="image-ordinal">${String(i+1).padStart(2,'0')}</span>
           <button type="button" class="remove-photo" title="${UI.clear}" aria-label="${safe(p.file.name)}" data-action="remove" ${state.working||collageSaving?'disabled':''}>${icons.close}</button>
         </div>
-        <div class="photo-meta"><span class="photo-name" title="${safe(p.file.name)}">${safe(p.file.name)}</span><div class="photo-actions">
+        <div class="photo-meta"><div class="photo-actions">
           ${refMode?`<button type="button" class="ref-btn ${refSelected?'selected':''}" data-action="ref" aria-pressed="${refSelected}" ${collageSaving||zipSaving?'disabled':''}>${refSelected?UI.ref:'기준으로'}</button>`:''}
           ${result?`<button type="button" class="download-single" data-action="download" aria-label="${safe(p.file.name)} ${UI.save}" title="${UI.save}">${icons.download}</button>`:''}
         </div></div></article>`;
@@ -631,6 +866,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     drawCards();
     renderCollageOrder();
     if(activeScreen==='collage')refreshCollage();
+    persistProject(true);
     if (candidates.length > remaining) flash(`6장 제한으로 ${remaining}장만 추가했습니다.`, true);
     else if (candidates.every(f => f.size <= 60*1024*1024)) clearFlash();
   }
@@ -645,6 +881,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     drawCards();
     renderCollageOrder();
     if(activeScreen==='collage')refreshCollage();
+    persistProject(true);
   }
   function removeAll() {
     if (state.working || collageSaving || zipSaving) return;
@@ -653,6 +890,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     state.photos = []; state.referenceId = null; collageOrderIds=[];
     renderCollageOrder();
     drawCards();
+    persistProject(true);
   }
 
   async function sourceDimensions(file, sourceUrl) {
@@ -1008,6 +1246,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     if(state.working){ cancel();return; }
     if(!state.photos.length || zipSaving || collageSaving)return;
     clearFlash(); invalidate(); drawCards();
+    persistProject(false);
     const token=++state.jobToken;
     state.working=true;
     updateControls();
@@ -1041,6 +1280,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
       }
       if(token!==state.jobToken)throw new Error('canceled');
       state.done=true;
+      persistProject(true);
       // Always show the newly corrected output, even if the user viewed originals before reprocessing.
       setPreviewView('after');
       if(reduced)flash(`이 기기의 메모리를 보호하기 위해 ${reduced}장의 출력 해상도를 조정했습니다.`);
@@ -1182,6 +1422,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     collageOrderIds.splice(target,0,id);
     renderCollageOrder();
     refreshCollage();
+    persistProject(false);
   }
   $('collageOrderList').addEventListener('click',event=>{
     const button=event.target.closest('button[data-order-step]');
@@ -1416,6 +1657,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     } finally {decoded.close();}
   }
   async function refreshCollage() {
+    scheduleProjectMeta();
     const revision=++collageRevision;
     if(!state.photos.length || state.working || activeScreen!=='collage')return;
     const photos=orderedCollagePhotos();
@@ -1544,7 +1786,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
   $('collageRatios').addEventListener('click',e=>{
     const button=e.target.closest('button[data-ratio]');
     if(!button || state.working || collageSaving || zipSaving)return;
-    collage.ratio=button.dataset.ratio;updateCollageRatios();refreshCollage();
+    collage.ratio=button.dataset.ratio;updateCollageRatios();refreshCollage();persistProject(false);
   });
   for(const [name,label] of [['Gap','gap'],['Padding','padding']]){
     $('collage'+name).addEventListener('input',e=>{
@@ -1553,6 +1795,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
       $('collage'+name+'Value').textContent=collage[label]+'px';
       refreshCollage();
     });
+    $('collage'+name).addEventListener('change',()=>persistProject(false));
   }
   $('collageBackground').addEventListener('click',e=>{
     const button=e.target.closest('button[data-bg]');if(!button||state.working||collageSaving||zipSaving)return;
@@ -1566,8 +1809,18 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     if(state.working || collageSaving || zipSaving)return;
     collage.resolution=Number(e.target.value);
     refreshCollage();
+    persistProject(false);
   });
   $('saveCollage').addEventListener('click',downloadCollage);
+  $('resetCollageSettings').addEventListener('click',resetCollageSettings);
+  $('resetCollageAll').addEventListener('click',()=>{
+    if(state.working||collageSaving||zipSaving)return;
+    if(!window.confirm('업로드한 모든 사진과 보정 결과, 콜라주 설정을 초기화할까요?'))return;
+    removeAll();
+    resetCollageSettings();
+    closeTools();switchScreen('color');
+    persistProject(true);
+  });
   updateCollageRatios();
   updateCollageSize();
 
@@ -1617,6 +1870,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
       committedStrength=state.strength;
       // Never discard the current results until the user's finger is released.
       if(state.done){invalidate();drawCards();}
+      persistProject(false);
     }
   }
   if(window.PointerEvent){
@@ -1694,6 +1948,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     if(previous!==state.strength){
       committedStrength=state.strength;
       if(state.done){invalidate();drawCards();}
+      persistProject(false);
     }
   });
   // Unlike an input element, a div slider cannot restore an obsolete 75% form value.
@@ -1709,6 +1964,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
       el.classList.toggle('active',el.dataset.view===state.view);
     });
     $('imageGrid').querySelectorAll('.photo-frame').forEach(el=>el.dataset.view=state.view);
+    scheduleProjectMeta();
   }
   $('viewControl').addEventListener('click',event=>{
     const button=event.target.closest('button[data-view]');
@@ -1716,7 +1972,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
   });
   function openPhoto(photo){
     const dialog=$('photoDialog');
-    $('detailTitle').textContent=photo.file.name;
+    $('detailTitle').textContent='사진 '+String(state.photos.indexOf(photo)+1).padStart(2,'0');
     $('detailOriginal').src=photo.url;
     $('detailEdited').src=photo.resultUrl||photo.url;
     $('detailPhoto').classList.toggle('has-result',Boolean(photo.resultUrl));
@@ -1738,6 +1994,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     }
     state.referenceId=photo.id;
     invalidate();
+    persistProject(false);
     // Update the selected chip synchronously, before the expensive color pass.
     drawCards();
     if(autoReprocess)runCorrection();
@@ -1757,6 +2014,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     if(!photo)return;
     photo.compare=Number(e.target.value);
     $('detailPhoto').style.setProperty('--compare',photo.compare+'%');
+    scheduleProjectMeta();
   });
   $('detailSave').addEventListener('click',()=>{
     const photo=state.photos.find(p=>p.id===Number($('photoDialog').dataset.id));
@@ -1798,6 +2056,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
   function switchScreen(next){
     if(next==='collage' && (!state.photos.length || state.working))return;
     activeScreen=next; closeTools(); updateControls();
+    persistProject(false);
     if(next==='collage'){renderCollageOrder();refreshCollage();queueCollageFit();}
     else queuePhotoFit();
   }
@@ -1805,11 +2064,19 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
   $('tabCollage').addEventListener('click',()=>switchScreen('collage'));
   $('headerAdd').addEventListener('click',()=>$('fileInput').click());
   document.addEventListener('keydown',e=>{if(e.key==='Escape')closeTools();});
+  // Flush a trailing debounced settings change when the tab loses focus.
+  document.addEventListener('visibilitychange',()=>{
+    if(document.visibilityState==='hidden' && metaTimer)persistProject(false);
+  });
   window.addEventListener('beforeunload',()=>{
+    if(metaTimer)persistProject(false);
     for(const p of state.photos){URL.revokeObjectURL(p.url);if(p.resultUrl)URL.revokeObjectURL(p.resultUrl);}
     state.runner?.close();
   });
   updateControls();
+  $('pickBtn').disabled=true;
+  $('fileInput').disabled=true;
+  restoreProject();
 })();
 
 </script>
