@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light"><meta name="theme-color" content="#f7f7f7">
 <title>tonal. — 사진 색감 통일</title>
+<!-- build: 2026-10-11 slider-drag-reference-switch -->
 <style>
 :root{color-scheme:light;--paper:#f7f7f7;--panel:#ffffff;--white:#ffffff;--ink:#171717;--sub:#666666;--line:#e5e5e5;--dark:#262626;--dark2:#2d2d2d;--darkline:#404040;--accent:#171717;--ease:cubic-bezier(.22,1,.36,1)}
 *{box-sizing:border-box}
@@ -25,7 +26,15 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
 .studio-layout,.collage-section{height:calc(100dvh - 73px);min-height:660px;display:grid;grid-template-columns:291px minmax(0,1fr)}
 .workspace,.collage-controls{min-width:0;background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden}.panel-head{display:flex;justify-content:space-between;align-items:center;padding:32px 28px 23px}.panel-head h2{font-size:18px;line-height:1.3;letter-spacing:-.55px;margin:0;font-weight:690}.panel-close{display:none}.panel-scroll{padding:0 28px 20px;min-height:0;overflow-y:auto;scrollbar-color:#d6d6d6 transparent;scrollbar-width:thin;flex:1}
 .setting-block{padding:25px 0 28px;border-top:1px solid var(--line)}.setting-label,.collage-control-label{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:16px;color:#464646;font-size:12px;font-weight:680}.setting-caption{margin-top:8px;font-size:11px;color:#999999;line-height:1.55}.mode-choices{display:flex;flex-direction:column;gap:8px}.mode-choice{width:100%;border:1px solid #dfdfdf;background:transparent;padding:14px 13px;text-align:left;border-radius:3px;color:#676767;font-size:13px;font-weight:570;display:flex;align-items:center;gap:11px;transition:background .17s,border-color .17s}.mode-choice:hover:enabled{border-color:#9d9d9d}.mode-choice.active{border-color:#262626;background:#fff;color:#181818}.radio-dot{height:15px;width:15px;flex:none;border-radius:50%;border:1px solid #b7b7b7;position:relative}.mode-choice.active .radio-dot{border-color:#262626}.mode-choice.active .radio-dot:after{content:"";position:absolute;background:#212121;width:7px;height:7px;border-radius:50%;left:3px;top:3px}
-.range-value{font-size:15px;font-weight:650;color:#1e1e1e;letter-spacing:-.5px;font-variant-numeric:tabular-nums}input[type=range]{accent-color:#171717;width:100%;margin:0;cursor:pointer}.strength{height:24px}.strength-scale{display:flex;justify-content:space-between;color:#a3a3a3;font-size:11px;margin-top:5px;font-variant-numeric:tabular-nums}.reference-notice{font-size:12px;color:#757575;line-height:1.6;border-top:1px solid var(--line);padding-top:23px}
+.range-value{font-size:15px;font-weight:650;color:#1e1e1e;letter-spacing:-.5px;font-variant-numeric:tabular-nums}input[type=range]{accent-color:#171717;width:100%;margin:0;cursor:pointer}/* Custom pointer-driven slider: the hit area is 48px, not the 5px track. */
+.strength-control{display:block;position:relative;width:100%;height:48px;cursor:ew-resize;touch-action:none;-webkit-user-select:none;user-select:none;overscroll-behavior:contain;-webkit-tap-highlight-color:transparent}
+.strength-control:focus-visible{outline:2px solid #777;outline-offset:2px;border-radius:3px}
+.strength-track{position:absolute;left:13px;right:13px;top:50%;height:5px;transform:translateY(-50%);border-radius:99px;background:#e2e2e2;pointer-events:none}
+.strength-fill{position:absolute;inset:0 auto 0 0;width:var(--strength-progress,52%);background:#262626;border-radius:99px}
+.strength-thumb{position:absolute;left:var(--strength-progress,52%);top:50%;width:26px;height:26px;transform:translate(-50%,-50%);border:2px solid #262626;border-radius:50%;background:#fff;box-shadow:0 1px 4px #0002;pointer-events:none}
+.strength-control.is-dragging .strength-thumb{box-shadow:0 0 0 5px #17171712,0 1px 4px #0002}
+.strength-control.is-disabled{opacity:.45;cursor:not-allowed}
+.strength-scale{display:flex;justify-content:space-between;color:#a3a3a3;font-size:11px;margin-top:5px;font-variant-numeric:tabular-nums}.reference-notice{font-size:12px;color:#757575;line-height:1.6;border-top:1px solid var(--line);padding-top:23px}
 .workspace-actions{margin-top:auto;padding:19px 28px 25px;border-top:1px solid var(--line)}.primary-btn{border:0;background:#1c1c1c;color:#fff;border-radius:3px;min-height:44px;padding:11px 15px;font-size:13px;font-weight:650;letter-spacing:-.02em;transition:background .16s}.primary-btn:hover:enabled{background:#3c3c3c}.workspace-actions .primary-btn{width:100%}.clear-btn{display:block;border:0;background:transparent;color:#868686;padding:14px 4px 1px;font-size:12px;margin:0 auto}.clear-btn:hover:enabled{color:#242424;text-decoration:underline}.progress-box{display:none;padding:0 28px 17px}.progress-box.visible{display:block}.progress-meta{display:flex;justify-content:space-between;align-items:center;gap:8px;color:#787878;font-size:11px;margin:0 0 7px}.progress-track{background:#e3e3e3;height:3px;overflow:hidden}.progress-fill{height:100%;width:0;background:#252525;transition:width .16s}.status{display:none;margin:0 28px 20px;padding:11px 12px;background:#efefef;color:#464646;font-size:11px;line-height:1.6;border-left:2px solid #8c8c8c}.status.visible{display:block}.status.error{background:#f1f1f1;color:#303030;border-left-color:#171717}
 .stage,.collage-preview-column{position:relative;min-width:0;background:var(--dark);color:#efefef;display:flex;flex-direction:column;overflow-y:auto}.stage-toolbar{display:flex;align-items:center;justify-content:space-between;padding:27px 36px 22px;gap:16px}.stage-title{display:flex;align-items:baseline;gap:10px}.stage-title h2{margin:0;font-size:15px;line-height:1.3;letter-spacing:-.25px;font-weight:600}.stage-count{font-size:12px;color:#909090}.preview-switch{display:none;gap:2px;padding:3px;border:1px solid #454545;border-radius:4px}.preview-switch.visible{display:flex}.preview-switch button{border:0;background:transparent;border-radius:2px;color:#acacac;min-width:56px;padding:6px 11px;font-weight:570;font-size:12px}.preview-switch button.active{background:#dbdbdb;color:#222222}.preview-switch button:hover{color:#fff}.preview-switch button.active:hover{color:#222222}
 .grid{padding:0 36px 30px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-content:start;gap:28px 17px}.photo-card{min-width:0}.photo-frame{background:#191919;position:relative;border:1px solid #363636;aspect-ratio:4/5;overflow:hidden;isolation:isolate}.photo-open{position:absolute;inset:0;display:block;width:100%;height:100%;padding:0;border:0;background:transparent;cursor:zoom-in}.photo-open:after{content:"";position:absolute;inset:0;border:1px solid transparent;transition:border-color .2s}.photo-open:hover:after{border-color:#aaaaaa}.photo-frame img{position:absolute;inset:0;height:100%;width:100%;object-fit:cover;pointer-events:none}.photo-frame .edited-image{display:none}.photo-frame.compare-ready[data-view=after] .edited-image{display:block}.photo-frame.compare-ready[data-view=before] .original-image{display:block}.remove-photo{position:absolute;z-index:3;top:9px;right:9px;width:28px;height:28px;border:0;border-radius:2px;background:#1a1a1ab8;color:white;display:grid;place-items:center;opacity:0;transition:opacity .17s}.remove-photo svg{width:14px;height:14px}.photo-card:hover .remove-photo,.remove-photo:focus-visible{opacity:1}.remove-photo:hover{background:#4a4a4a}.image-ordinal{position:absolute;pointer-events:none;z-index:2;top:11px;left:12px;color:#fff;text-shadow:0 1px 5px #000b;font-size:11px;font-weight:660;font-variant-numeric:tabular-nums}.photo-meta{display:flex;align-items:start;justify-content:space-between;gap:8px;padding:11px 1px 0;min-height:33px}.photo-name{min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;font-weight:480;letter-spacing:-.01em;color:#bdbdbd;padding-top:3px}.photo-actions{display:flex;gap:7px;align-items:center;flex-shrink:0}.ref-btn{border:1px solid #6b6b6b;background:transparent;color:#c7c7c7;border-radius:2px;padding:4px 7px;font-size:10px;line-height:1.35}.ref-btn:hover{background:#373737}.ref-btn.selected{background:#e4e4e4;border-color:#e4e4e4;color:#262626}.download-single{display:grid;place-items:center;padding:3px;border:0;background:none;color:#c4c4c4}.download-single:hover{color:white}.download-single svg{width:17px;height:17px}.stage-footer{border-top:1px solid var(--darkline);margin:0 36px 0;padding:18px 0 30px;display:none;justify-content:space-between;align-items:center;gap:12px}.stage-footer.visible{display:flex}.stage-footer-text{font-size:11px;color:#a1a1a1}.stage-footer .primary-btn{background:#e8e8e8;color:#252525;min-height:39px;font-size:12px}.stage-footer .primary-btn:hover:enabled{background:#fff}
@@ -139,8 +148,10 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
           <p id="referenceInfo" class="reference-notice">기준 사진을 따로 선택하지 않으면 첫 번째 사진을 기준으로 맞춥니다.</p>
         </section>
 <section class="setting-block">
-          <label class="setting-label" for="strength"><span>보정 강도</span><span class="range-value" id="strengthLabel">75%</span></label>
-          <input class="strength" type="range" id="strength" min="0" max="250" step="5" value="75">
+          <label class="setting-label" for="strength"><span>보정 강도</span><span class="range-value" id="strengthLabel">130%</span></label>
+          <div class="strength-control" id="strength" role="slider" tabindex="0" aria-label="보정 강도" aria-valuemin="0" aria-valuemax="250" aria-valuenow="130" aria-valuetext="130%" style="--strength-progress:52%">
+            <span class="strength-track"><span class="strength-fill"></span><span class="strength-thumb"></span></span>
+          </div>
           <div class="strength-scale" aria-hidden="true"><span>0%</span><span>100%</span><span>250%</span></div>
         </section>
         
@@ -205,7 +216,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
 (() => {
   const MAX_FILES = 6;
   const $ = (id) => document.getElementById(id);
-  const state = { photos: [], mode: 'reference', referenceId: null, strength: 75, view: 'after', working: false, done: false, jobToken: 0, runner: null };
+  const state = { photos: [], mode: 'reference', referenceId: null, strength: 130, view: 'after', working: false, done: false, jobToken: 0, runner: null };
   let activeScreen='color';
   const UI = {"process":"\uc0c9\uac10 \ud1b5\uc77c","clear":"\ubaa8\ub450 \uc9c0\uc6b0\uae30","retry":"\ub2e4\uc2dc \ubcf4\uc815","cancel":"\ucde8\uc18c","photoAdd":"\uc0ac\uc9c4 \uc120\ud0dd","editSettings":"\ubcf4\uc815 \uc124\uc815","collageSettings":"\ucf5c\ub77c\uc8fc \uc124\uc815","collageSave":"\u2193 \ucf5c\ub77c\uc8fc PNG \uc800\uc7a5","ref":"\uae30\uc900 \uc0ac\uc9c4","save":"\uc800\uc7a5"};
   const collage = {orientation:'portrait', ratio:'3:4', layout:'regular', fit:'cover', gap:0, padding:0, background:'white', resolution:3200};
@@ -258,7 +269,10 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     $('clearBtn').disabled=!total || state.working || collageSaving || zipSaving;
     $('processBtn').disabled=!total || zipSaving || collageSaving;
     $('processBtn').textContent=state.working?UI.cancel:state.done?UI.retry:UI.process;
-    $('strength').disabled=state.working || zipSaving || collageSaving;
+    const strengthDisabled=state.working || zipSaving || collageSaving;
+    $('strength').classList.toggle('is-disabled',strengthDisabled);
+    $('strength').setAttribute('aria-disabled',String(strengthDisabled));
+    $('strength').tabIndex=strengthDisabled?-1:0;
     $('resultCount').textContent=total ? `${total} / ${MAX_FILES}` : '';
     $('referenceInfo').hidden=total<=1;
     $('viewControl').classList.toggle('visible',state.done && state.photos.some(p=>Boolean(p.resultUrl)));
@@ -280,7 +294,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     state.done = false;
     for (const p of state.photos) {
       if (p.resultUrl) URL.revokeObjectURL(p.resultUrl);
-      p.resultUrl = null; p.blob = null; p.profile = null; p.compare = 50; p.collageThumb = null; p.collageSource = null; p.collageSize = null;
+      p.resultUrl = null; p.blob = null; p.compare = 50; p.collageThumb = null; p.collageSource = null; p.collageSize = null;
     }
     resetProgress(); clearFlash();
   }
@@ -298,7 +312,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
           <button type="button" class="remove-photo" title="${UI.clear}" aria-label="${safe(p.file.name)}" data-action="remove" ${state.working||collageSaving?'disabled':''}>${icons.close}</button>
         </div>
         <div class="photo-meta"><span class="photo-name" title="${safe(p.file.name)}">${safe(p.file.name)}</span><div class="photo-actions">
-          ${refMode?`<button type="button" class="ref-btn ${refSelected?'selected':''}" data-action="ref" ${state.working||collageSaving?'disabled':''}>${refSelected?UI.ref:'기준으로'}</button>`:''}
+          ${refMode?`<button type="button" class="ref-btn ${refSelected?'selected':''}" data-action="ref" aria-pressed="${refSelected}" ${collageSaving||zipSaving?'disabled':''}>${refSelected?UI.ref:'기준으로'}</button>`:''}
           ${result?`<button type="button" class="download-single" data-action="download" aria-label="${safe(p.file.name)} ${UI.save}" title="${UI.save}">${icons.download}</button>`:''}
         </div></div></article>`;
     }).join('');
@@ -697,7 +711,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
   async function runCorrection() {
     if(state.working){ cancel();return; }
     if(!state.photos.length || zipSaving || collageSaving)return;
-    clearFlash(); invalidate();
+    clearFlash(); invalidate(); drawCards();
     const token=++state.jobToken;
     state.working=true;
     updateControls();
@@ -707,7 +721,11 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
       for(let i=0;i<state.photos.length;i++) {
         if(token!==state.jobToken)throw new Error('canceled');
         progress(2+(i/state.photos.length)*15,`사진 ${i+1}/${state.photos.length} 색상·조명 분석 중…`);
-        profiles.push(await analyze(state.photos[i]));
+        const photo=state.photos[i];
+        const profile=photo.profile || await analyze(photo);
+        if(token!==state.jobToken)throw new Error('canceled');
+        photo.profile=profile;
+        profiles.push(profile);
         await sleep();
       }
       progress(18,'사진 사이의 공통 색감을 계산하고 있어요…');
@@ -727,6 +745,8 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
       }
       if(token!==state.jobToken)throw new Error('canceled');
       state.done=true;
+      // Always show the newly corrected output, even if the user viewed originals before reprocessing.
+      setPreviewView('after');
       if(reduced)flash(`이 기기의 메모리를 보호하기 위해 ${reduced}장의 출력 해상도를 조정했습니다.`);
       resetProgress();
       drawCards();
@@ -1145,24 +1165,133 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
   $('clearBtn').addEventListener('click',removeAll);
   $('processBtn').addEventListener('click',runCorrection);
   $('downloadAll').addEventListener('click',downloadAll);
-  function syncStrength(value,commit=false){
-    const next=Number(value);
-    if(!Number.isFinite(next))return;
+  // Pointer-driven control: handles actual finger drag, mouse drag and keyboard.
+  // Unlike a native input[type=range], no browser-generated input event can
+  // overwrite the value from a touch gesture. The wide hit area avoids scrolling conflicts.
+  const strengthControl=$('strength');
+  let strengthPointer=null;
+  let strengthGestureStart=state.strength;
+  let committedStrength=state.strength;
+  const strengthMin=0,strengthMax=250,strengthStep=5;
+  function strengthDisabled(){return state.working || zipSaving || collageSaving;}
+  function syncStrength(value){
+    if(!Number.isFinite(Number(value)))return;
+    const next=clamp(Math.round(Number(value)/strengthStep)*strengthStep,strengthMin,strengthMax);
     state.strength=next;
     $('strengthLabel').textContent=next+'%';
-    if(commit && state.done){
-      invalidate();
-      drawCards();
-      if(activeScreen==='collage')refreshCollage();
+    strengthControl.style.setProperty('--strength-progress',100*(next-strengthMin)/(strengthMax-strengthMin)+'%');
+    strengthControl.setAttribute('aria-valuenow',String(next));
+    strengthControl.setAttribute('aria-valuetext',next+'%');
+  }
+  function positionToStrength(clientX){
+    const box=strengthControl.getBoundingClientRect(),inset=13;
+    const ratio=clamp((clientX-box.left-inset)/Math.max(1,box.width-inset*2),0,1);
+    syncStrength(strengthMin+ratio*(strengthMax-strengthMin));
+  }
+  function finishStrengthGesture(){
+    if(strengthPointer===null)return;
+    strengthPointer=null;
+    strengthControl.classList.remove('is-dragging');
+    if(state.strength!==strengthGestureStart){
+      committedStrength=state.strength;
+      // Never discard the current results until the user's finger is released.
+      if(state.done){invalidate();drawCards();}
     }
   }
-  $('strength').addEventListener('input',e=>{syncStrength(e.target.value,false);});
-  $('strength').addEventListener('change',e=>{syncStrength(e.target.value,true);});
-  $('viewControl').addEventListener('click',e=>{
-    const b=e.target.closest('button[data-view]');if(!b)return;
-    state.view=b.dataset.view;
-    $('viewControl').querySelectorAll('button').forEach(el=>el.classList.toggle('active',el===b));
+  if(window.PointerEvent){
+    strengthControl.addEventListener('pointerdown',event=>{
+      if(strengthDisabled() || (event.pointerType==='mouse'&&event.button!==0))return;
+      event.preventDefault();
+      strengthPointer=event.pointerId;
+      strengthGestureStart=state.strength;
+      strengthControl.classList.add('is-dragging');
+      positionToStrength(event.clientX);
+      try{strengthControl.setPointerCapture(event.pointerId);}catch(_){}
+    });
+    strengthControl.addEventListener('pointermove',event=>{
+      if(strengthPointer!==event.pointerId)return;
+      if(event.cancelable)event.preventDefault();
+      positionToStrength(event.clientX);
+    });
+    strengthControl.addEventListener('pointerup',event=>{
+      if(strengthPointer!==event.pointerId)return;
+      positionToStrength(event.clientX);
+      finishStrengthGesture();
+      if(strengthControl.hasPointerCapture?.(event.pointerId)){
+        try{strengthControl.releasePointerCapture(event.pointerId);}catch(_){}
+      }
+    });
+    strengthControl.addEventListener('pointercancel',event=>{
+      if(strengthPointer===event.pointerId)finishStrengthGesture();
+    });
+    strengthControl.addEventListener('lostpointercapture',event=>{
+      if(strengthPointer===event.pointerId)finishStrengthGesture();
+    });
+  }else{
+    // Fallback for older Android WebViews without Pointer Events.
+    const touchPoint=event=>Array.from(event.changedTouches).find(t=>t.identifier===strengthPointer);
+    strengthControl.addEventListener('touchstart',event=>{
+      if(strengthDisabled() || strengthPointer!==null)return;
+      const touch=event.changedTouches[0];if(!touch)return;
+      if(event.cancelable)event.preventDefault();
+      strengthPointer=touch.identifier;strengthGestureStart=state.strength;
+      strengthControl.classList.add('is-dragging');positionToStrength(touch.clientX);
+    },{passive:false});
+    strengthControl.addEventListener('touchmove',event=>{
+      const touch=touchPoint(event);if(!touch)return;
+      if(event.cancelable)event.preventDefault();positionToStrength(touch.clientX);
+    },{passive:false});
+    for(const type of ['touchend','touchcancel']){
+      strengthControl.addEventListener(type,event=>{
+        const touch=touchPoint(event);if(!touch)return;
+        if(type==='touchend')positionToStrength(touch.clientX);
+        finishStrengthGesture();
+      },{passive:false});
+    }
+    const finishMouse=()=>{if(strengthPointer==='mouse')finishStrengthGesture();};
+    strengthControl.addEventListener('mousedown',event=>{
+      if(strengthDisabled()||event.button!==0)return;
+      strengthPointer='mouse';strengthGestureStart=state.strength;
+      strengthControl.classList.add('is-dragging');positionToStrength(event.clientX);
+    });
+    document.addEventListener('mousemove',event=>{
+      if(strengthPointer==='mouse')positionToStrength(event.clientX);
+    });
+    document.addEventListener('mouseup',finishMouse);
+  }
+  strengthControl.addEventListener('keydown',event=>{
+    if(strengthDisabled())return;
+    const previous=state.strength;
+    if(event.key==='ArrowLeft'||event.key==='ArrowDown')syncStrength(previous-strengthStep);
+    else if(event.key==='ArrowRight'||event.key==='ArrowUp')syncStrength(previous+strengthStep);
+    else if(event.key==='PageDown')syncStrength(previous-25);
+    else if(event.key==='PageUp')syncStrength(previous+25);
+    else if(event.key==='Home')syncStrength(0);
+    else if(event.key==='End')syncStrength(250);
+    else return;
+    event.preventDefault();
+    if(previous!==state.strength){
+      committedStrength=state.strength;
+      if(state.done){invalidate();drawCards();}
+    }
+  });
+  // Unlike an input element, a div slider cannot restore an obsolete 75% form value.
+  // Explicit initialization also synchronizes the number shown in the label.
+  syncStrength(130);
+  window.addEventListener('pageshow',()=>{
+    // Do not reset a value the user deliberately changed in this session.
+    syncStrength(state.strength);
+  });
+  function setPreviewView(view){
+    state.view=view==='before'?'before':'after';
+    $('viewControl').querySelectorAll('button[data-view]').forEach(el=>{
+      el.classList.toggle('active',el.dataset.view===state.view);
+    });
     $('imageGrid').querySelectorAll('.photo-frame').forEach(el=>el.dataset.view=state.view);
+  }
+  $('viewControl').addEventListener('click',event=>{
+    const button=event.target.closest('button[data-view]');
+    if(button)setPreviewView(button.dataset.view);
   });
   function openPhoto(photo){
     const dialog=$('photoDialog');
@@ -1177,13 +1306,29 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     dialog.dataset.id=photo.id;
     if(!dialog.open)dialog.showModal();
   }
+  function chooseReference(photo){
+    if(!photo || photo.id===state.referenceId || collageSaving || zipSaving)return;
+    const autoReprocess=state.done || state.working;
+    if(state.working){
+      // Abort obsolete correction; the newest reference selection wins.
+      state.jobToken++;
+      state.working=false;
+      state.runner?.close();state.runner=null;
+    }
+    state.referenceId=photo.id;
+    invalidate();
+    // Update the selected chip synchronously, before the expensive color pass.
+    drawCards();
+    if(autoReprocess)runCorrection();
+    else if(activeScreen==='collage')refreshCollage();
+  }
   $('imageGrid').addEventListener('click',e=>{
     const b=e.target.closest('button[data-action]');if(!b)return;
     const photo=state.photos.find(p=>p.id===Number(b.closest('.photo-card')?.dataset.id));if(!photo)return;
     const action=b.dataset.action;
     if(action==='open')openPhoto(photo);
     else if(action==='remove')removePhoto(photo.id);
-    else if(action==='ref'){state.referenceId=photo.id;invalidate();drawCards();if(activeScreen==='collage')refreshCollage();}
+    else if(action==='ref')chooseReference(photo);
     else if(action==='download' && photo.blob)saveBlob(photo.blob,resultName(photo,state.photos.indexOf(photo)));
   });
   $('detailRange').addEventListener('input',e=>{
