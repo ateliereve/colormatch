@@ -395,6 +395,21 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
   body.sheet-open .collage-preview-column{display:flex!important;flex-direction:column!important}
 }
 
+
+/* v9: tighten the two-column photo contact sheet without changing thumbnail ratio. */
+@media (min-width:721px){
+  .studio-layout .grid{
+    column-gap:6px!important;
+    width:min(100%,calc(var(--photo-cols) * 260px + (var(--photo-cols) - 1) * 6px + 48px))!important;
+  }
+}
+@media (max-width:720px){
+  .studio-layout .grid{column-gap:4px!important;padding-left:8px!important;padding-right:8px!important;margin-inline:auto!important;}
+}
+/* Keep the confirmation state unmistakable on mouse and touch devices. */
+.photo-frame .remove-photo.is-confirming{opacity:1!important;background:#f5f5f5!important;color:#171717!important;outline:2px solid #171717;outline-offset:-2px;}
+.photo-frame .remove-photo.is-confirming:after{content:"한번 더";position:absolute;right:0;top:100%;padding:2px 4px;background:#f5f5f5;color:#171717;font-size:9px;line-height:1.2;white-space:nowrap;border-radius:0 0 2px 2px;pointer-events:none;}
+
 </style>
 </head>
 <body>
@@ -516,7 +531,6 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
   const collage={...DEFAULT_COLLAGE};
   let collageOrderIds=[];
   let pendingRemovalId=null;
-  let pendingRemovalTimeout=null;
   let collageRevision=0;
   let collageSaving=false;
   let zipSaving=false;
@@ -726,17 +740,27 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     const css=getComputedStyle(g);
     const cols=Math.max(1,Number(g.style.getPropertyValue('--photo-cols'))||1);
     const rows=Math.max(1,Number(g.style.getPropertyValue('--photo-rows'))||1);
-    const horizontal=r.width-parseFloat(css.paddingLeft)-parseFloat(css.paddingRight)-(cols-1)*parseFloat(css.columnGap);
+    const mobile=window.innerWidth<=720;
+    const fullWidth=mobile?$('results').getBoundingClientRect().width:r.width;
+    const insetLeft=parseFloat(css.paddingLeft),insetRight=parseFloat(css.paddingRight);
+    const gapX=parseFloat(css.columnGap);
+    const horizontal=fullWidth-insetLeft-insetRight-(cols-1)*gapX;
     const vertical=r.height-parseFloat(css.paddingTop)-parseFloat(css.paddingBottom)-(rows-1)*parseFloat(css.rowGap);
     const cellW=horizontal/cols,cellH=vertical/rows;
-    // Landscape 4:3 contact-sheet tiles; subtract the fixed metadata row so
-    // corrected and original cards occupy exactly the same geometry.
-    const controlsHeight=window.innerWidth<=720?25:32;
-    const maxWidth=window.innerWidth<=720?340:260;
+    // Keep two photos near each other even when a short mobile viewport limits
+    // their height. The grid's actual width then shrinks with the photo frames.
+    const controlsHeight=mobile?25:32;
+    const maxWidth=mobile?340:260;
     const frameWidth=Math.max(25,Math.floor(Math.min(cellW,Math.max(1,cellH-controlsHeight)*4/3,maxWidth)));
     const frameHeight=Math.max(19,Math.floor(frameWidth*3/4));
     g.style.setProperty('--frame-height',frameHeight+'px');
     g.style.setProperty('--frame-width',frameWidth+'px');
+    if(mobile && cols>=2 && !document.body.classList.contains('sheet-open')){
+      const fittedWidth=frameWidth*cols+(cols-1)*gapX+insetLeft+insetRight;
+      g.style.width=Math.min(fullWidth,Math.ceil(fittedWidth))+'px';
+    }else{
+      g.style.removeProperty('width');
+    }
   }
   function updateControls() {
     const total=state.photos.length;
@@ -758,6 +782,11 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     $('clearBtn').disabled=!total || state.working || collageSaving || zipSaving;
     $('processBtn').disabled=!total || zipSaving || collageSaving;
     $('processBtn').textContent=state.working?UI.cancel:state.done?'다시 보정':UI.process;
+    // A card drawn during processing has its X initially disabled. Explicitly
+    // release that disabled attribute after completion (without redrawing).
+    $('imageGrid').querySelectorAll('.remove-photo').forEach(button=>{
+      button.disabled=state.working || collageSaving || zipSaving;
+    });
     const strengthDisabled=state.working || zipSaving || collageSaving;
     $('strength').classList.toggle('is-disabled',strengthDisabled);
     $('strength').setAttribute('aria-disabled',String(strengthDisabled));
@@ -804,11 +833,16 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     scheduleProjectMeta();
   }
   function clearPendingRemoval(){
-    if(pendingRemovalTimeout){clearTimeout(pendingRemovalTimeout);pendingRemovalTimeout=null;}
-    const oldId=pendingRemovalId;pendingRemovalId=null;
+    const oldId=pendingRemovalId;
+    pendingRemovalId=null;
     if(oldId!==null){
       const button=$('imageGrid').querySelector(`.photo-card[data-id="${oldId}"] .remove-photo`);
-      if(button){button.classList.remove('is-confirming');button.title='사진 삭제';button.setAttribute('aria-label','사진 삭제');}
+      if(button){
+        button.classList.remove('is-confirming');
+        button.title='사진 삭제';
+        button.setAttribute('aria-label','사진 삭제');
+        button.setAttribute('aria-pressed','false');
+      }
     }
   }
   function confirmRemovePhoto(photo){
@@ -821,11 +855,16 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     clearPendingRemoval();
     pendingRemovalId=photo.id;
     const button=$('imageGrid').querySelector(`.photo-card[data-id="${photo.id}"] .remove-photo`);
-    if(button){button.classList.add('is-confirming');button.title='한 번 더 누르면 삭제';button.setAttribute('aria-label','한 번 더 누르면 삭제');}
-    pendingRemovalTimeout=setTimeout(()=>clearPendingRemoval(),3500);
+    if(button){
+      button.classList.add('is-confirming');
+      button.title='한 번 더 누르면 삭제';
+      button.setAttribute('aria-label','한 번 더 누르면 삭제');
+      button.setAttribute('aria-pressed','true');
+    }
   }
   function drawCards() {
-    clearPendingRemoval();
+    // Redrawing the cards must not cancel a first press of the remove button.
+    if(pendingRemovalId!==null && !state.photos.some(p=>p.id===pendingRemovalId))clearPendingRemoval();
     if(!state.photos.length){$('imageGrid').innerHTML=''; updateControls(); return;}
     $('imageGrid').innerHTML=state.photos.map((p,i)=>{
       const result=Boolean(p.resultUrl);
@@ -836,7 +875,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
           <button type="button" class="photo-open" data-action="open" aria-label="${safe(p.file.name)}"><img class="original-image" src="${p.url}" alt="${safe(p.file.name)}">
             ${result?`<img class="edited-image" src="${p.resultUrl}" alt="">`:''}</button>
           <span class="image-ordinal">${String(i+1).padStart(2,'0')}</span>
-          <button type="button" class="remove-photo" title="${UI.clear}" aria-label="${safe(p.file.name)}" data-action="remove" ${state.working||collageSaving?'disabled':''}>${icons.close}</button>
+          <button type="button" class="remove-photo ${pendingRemovalId===p.id?'is-confirming':''}" title="${pendingRemovalId===p.id?'한 번 더 누르면 삭제':'사진 삭제'}" aria-label="${pendingRemovalId===p.id?'한 번 더 누르면 삭제':'사진 삭제'}" aria-pressed="${pendingRemovalId===p.id}" data-action="remove" ${state.working||collageSaving?'disabled':''}>${icons.close}</button>
         </div>
         <div class="photo-meta"><div class="photo-actions">
           ${refMode?`<button type="button" class="ref-btn ${refSelected?'selected':''}" data-action="ref" aria-pressed="${refSelected}" ${collageSaving||zipSaving?'disabled':''}>${refSelected?UI.ref:'기준으로'}</button>`:''}
@@ -847,6 +886,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
   }
   async function uploadFiles(files) {
     if (state.working || collageSaving || zipSaving) return;
+    clearPendingRemoval();
     const candidates = Array.from(files).filter(f => f.type.startsWith('image/') && /^(image\/(jpeg|png|webp|avif))$/.test(f.type));
     if (!candidates.length) { flash('지원되는 이미지(JPEG, PNG, WebP, AVIF)를 선택해주세요.', true); return; }
     const remaining = MAX_FILES - state.photos.length;
@@ -871,6 +911,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
   }
   function removePhoto(id) {
     if (state.working || collageSaving || zipSaving) return;
+    clearPendingRemoval();
     const at = state.photos.findIndex(p => p.id === id);
     if (at === -1) return;
     invalidate();
@@ -884,6 +925,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
   }
   function removeAll() {
     if (state.working || collageSaving || zipSaving) return;
+    clearPendingRemoval();
     invalidate();
     for (const p of state.photos) URL.revokeObjectURL(p.url);
     state.photos = []; state.referenceId = null; collageOrderIds=[];
@@ -1970,6 +2012,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     if(button)setPreviewView(button.dataset.view);
   });
   function openPhoto(photo){
+    clearPendingRemoval();
     const dialog=$('photoDialog');
     $('detailTitle').textContent='사진 '+String(state.photos.indexOf(photo)+1).padStart(2,'0');
     $('detailOriginal').src=photo.url;
@@ -1984,6 +2027,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
   }
   function chooseReference(photo){
     if(!photo || photo.id===state.referenceId || collageSaving || zipSaving)return;
+    clearPendingRemoval();
     const autoReprocess=state.done || state.working;
     if(state.working){
       // Abort obsolete correction; the newest reference selection wins.
@@ -2003,10 +2047,16 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     const b=e.target.closest('button[data-action]');if(!b)return;
     const photo=state.photos.find(p=>p.id===Number(b.closest('.photo-card')?.dataset.id));if(!photo)return;
     const action=b.dataset.action;
-    if(action==='open')openPhoto(photo);
-    else if(action==='remove')confirmRemovePhoto(photo);
-    else if(action==='ref')chooseReference(photo);
-    else if(action==='download' && photo.blob)saveBlob(photo.blob,resultName(photo,state.photos.indexOf(photo)));
+    if(action==='remove'){
+      e.preventDefault();
+      e.stopPropagation();
+      confirmRemovePhoto(photo);
+    }else{
+      clearPendingRemoval();
+      if(action==='open')openPhoto(photo);
+      else if(action==='ref')chooseReference(photo);
+      else if(action==='download' && photo.blob)saveBlob(photo.blob,resultName(photo,state.photos.indexOf(photo)));
+    }
   });
   $('detailRange').addEventListener('input',e=>{
     const photo=state.photos.find(p=>p.id===Number($('photoDialog').dataset.id));
@@ -2054,6 +2104,7 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
   $('mobileZip').addEventListener('click',()=>{if(state.done)downloadAll();});
   function switchScreen(next){
     if(next==='collage' && (!state.photos.length || state.working))return;
+    clearPendingRemoval();
     activeScreen=next; closeTools(); updateControls();
     persistProject(false);
     if(next==='collage'){renderCollageOrder();refreshCollage();queueCollageFit();}
