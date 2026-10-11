@@ -443,6 +443,44 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
   .inline-color-tools:not([hidden]){display:block!important;flex:0 0 auto}
 }
 
+/* v13 — restore the uploaded v3's edge-to-edge, top-anchored mobile contact sheet.
+   The v3 layout used equal-height rows and flexible frames, not centered 4:3 tiles.
+   Keep compact new labels, controls, persistence and two-column mobile photo order. */
+@media(max-width:720px){
+  :root{--mobile-footer-height:calc(76px + max(0px,env(safe-area-inset-bottom) - 12px))}
+  .mobile-bar{min-height:76px!important;padding:12px 17px max(12px,env(safe-area-inset-bottom))!important;}
+  .mobile-bar .primary-btn,.mobile-bar .mobile-tools-toggle{height:36px!important;min-height:36px!important;}
+  .studio-layout>.stage .stage-toolbar{
+    height:43px!important;min-height:43px!important;max-height:43px!important;
+    flex:0 0 43px!important;padding:11px 15px 10px!important;
+  }
+  body .studio-layout>.stage .grid{
+    width:100%!important;max-width:none!important;min-height:0!important;
+    flex:1 1 auto!important;margin:0!important;
+    display:grid!important;
+    grid-template-columns:repeat(var(--photo-cols),minmax(0,1fr))!important;
+    grid-template-rows:repeat(var(--photo-rows),minmax(0,1fr))!important;
+    align-content:stretch!important;align-items:stretch!important;
+    justify-items:stretch!important;justify-content:stretch!important;
+    gap:8px 9px!important;padding:0 11px 10px!important;overflow:hidden!important;
+  }
+  body .studio-layout>.stage .grid .photo-card{
+    width:100%!important;height:100%!important;min-height:0!important;
+    max-width:100%!important;max-height:none!important;
+    flex-direction:column!important;justify-content:initial!important;
+    align-self:stretch!important;justify-self:stretch!important;
+  }
+  body .studio-layout>.stage .grid .photo-frame{
+    width:100%!important;height:auto!important;min-height:0!important;
+    max-height:none!important;aspect-ratio:auto!important;
+    flex:1 1 0!important;
+  }
+  body .studio-layout>.stage .grid .photo-meta{
+    flex:0 0 25px!important;height:25px!important;
+    min-height:25px!important;max-height:25px!important;
+    padding-top:3px!important;
+  }
+}
 </style>
 </head>
 <body>
@@ -768,6 +806,13 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     photoFitFrame=requestAnimationFrame(()=>{photoFitFrame=0;fitPhotoGrid();});
   }
   function fitPhotoGrid(){
+    if(window.innerWidth<=720){
+      const grid=$('imageGrid');
+      grid.style.removeProperty('width');
+      grid.style.removeProperty('--frame-width');
+      grid.style.removeProperty('--frame-height');
+      return;
+    }
     if(activeScreen!=='color' || !state.photos.length)return;
     const g=$('imageGrid'),r=g.getBoundingClientRect();
     if(r.width<20 || r.height<20)return;
