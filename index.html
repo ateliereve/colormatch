@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light"><meta name="theme-color" content="#f7f7f7">
 <title>tonal. — 사진 색감 통일</title>
-<!-- build: 2026-10-11 v7 compact-landscape-preview -->
+<!-- build: 2026-10-11 v8 two-column-landscape-preview -->
 <style>
 :root{color-scheme:light;--paper:#f7f7f7;--panel:#ffffff;--white:#ffffff;--ink:#171717;--sub:#666666;--line:#e5e5e5;--dark:#262626;--dark2:#2d2d2d;--darkline:#404040;--accent:#171717;--ease:cubic-bezier(.22,1,.36,1)}
 *{box-sizing:border-box}
@@ -763,10 +763,9 @@ main{min-height:calc(100dvh - 73px)}.welcome{min-height:calc(100dvh - 73px);padd
     $('strength').setAttribute('aria-disabled',String(strengthDisabled));
     $('strength').tabIndex=strengthDisabled?-1:0;
     $('resultCount').textContent=total ? `${total} / ${MAX_FILES}` : '';
-    const mobileWidth=window.innerWidth<=720,mediumWidth=window.innerWidth<=925;
-    const columns=mobileWidth ? (total<=3?Math.max(1,total):total===4?2:3)
-      : mediumWidth ? (total<=2?Math.max(1,total):2)
-      : total<=3?Math.max(1,total):total===4?2:3;
+    // Classic two-column contact sheet: 6 photos form 2 columns × 3 rows.
+    // Keep the landscape 4:3 frames and make row count responsive to 1-6 photos.
+    const columns=total<=1?1:2;
     const rows=Math.max(1,Math.ceil(total/columns));
     $('imageGrid').dataset.count=String(total);
     $('imageGrid').style.setProperty('--photo-cols',String(columns));
